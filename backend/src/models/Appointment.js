@@ -15,7 +15,9 @@ const appointmentSchema = new mongoose.Schema(
     counselorName: { type: String, required: true },
     counselorEmail: { type: String, required: true },
     date: { type: Date, required: true },
+    dateStr: { type: String, required: true },
     time: { type: String, required: true },
+    activeSlotKey: { type: String, default: null },
     consultationType: { type: String, enum: ["online", "offline"], default: "online" },
     reason: { type: String, default: "" },
     additionalNotes: { type: String, default: "" },
@@ -45,7 +47,10 @@ const appointmentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-appointmentSchema.pre("save", function (next) {
+appointmentSchema.pre("validate", function (next) {
+  if (this.date && !this.dateStr) {
+    this.dateStr = new Date(this.date).toISOString().split("T")[0];
+  }
   if (this.candidate && !this.patient) {
     this.patient = this.candidate;
   }
@@ -67,12 +72,26 @@ appointmentSchema.pre("save", function (next) {
   } else if (this.patientPhone && !this.candidatePhone) {
     this.candidatePhone = this.patientPhone;
   }
+
+  // Active appointments occupy the slot; cancelled / rejected release it
+  const activeStatuses = ["pending", "accepted", "confirmed", "rescheduled"];
+  if (activeStatuses.includes(this.status) && this.counselor && this.dateStr && this.time) {
+    this.activeSlotKey = `${this.counselor.toString()}_${this.dateStr}_${this.time}`;
+  } else {
+    this.activeSlotKey = null;
+  }
+
   next();
 });
 
 appointmentSchema.index({ candidate: 1, status: 1 });
 appointmentSchema.index({ patient: 1, status: 1 });
 appointmentSchema.index({ counselor: 1, status: 1 });
+appointmentSchema.index({ counselor: 1, dateStr: 1, status: 1 });
 appointmentSchema.index({ date: 1 });
+appointmentSchema.index(
+  { activeSlotKey: 1 },
+  { unique: true, partialFilterExpression: { activeSlotKey: { $type: "string" } } }
+);
 
 export default mongoose.model("Appointment", appointmentSchema);

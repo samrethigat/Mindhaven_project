@@ -21,6 +21,10 @@ const mediaFavoriteSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    artist: {
+      type: String,
+      default: "",
+    },
     data: {
       type: mongoose.Schema.Types.Mixed,
       default: {},

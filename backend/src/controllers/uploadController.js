@@ -6,14 +6,43 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter(req, file, cb) {
-    const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf", "audio/webm", "audio/mp4", "audio/mpeg"];
+    const allowed = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "application/pdf",
+      "audio/webm",
+      "audio/mp4",
+      "audio/mpeg",
+      "audio/wav",
+      "audio/ogg",
+    ];
     if (allowed.includes(file.mimetype)) return cb(null, true);
-    cb(new Error("File type not allowed"));
+    cb(new Error("File type not allowed. Please upload an image, audio, or PDF file."));
   },
 });
 
-export function uploadMiddleware(field) {
-  return upload.single(field);
+/**
+ * Robust Upload Middleware supporting both specific field names and any field name.
+ */
+export function uploadMiddleware(field = "file") {
+  return (req, res, next) => {
+    upload.any()(req, res, (err) => {
+      if (err) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).json({ error: "File size exceeds 10MB limit." });
+        }
+        return res.status(400).json({ error: err.message || "File upload error" });
+      }
+
+      if (req.files && req.files.length > 0) {
+        req.file = req.files.find((f) => f.fieldname === field) || req.files[0];
+      }
+
+      next();
+    });
+  };
 }
 
 export async function uploadFile(req, res) {

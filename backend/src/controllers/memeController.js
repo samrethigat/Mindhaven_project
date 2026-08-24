@@ -220,7 +220,7 @@ export async function getMemes(req, res) {
  */
 export async function toggleMemeLike(req, res) {
   try {
-    const { meme } = req.body;
+    const meme = req.body.meme || req.body.track || req.body.data;
     if (!meme || !meme.id) return res.status(400).json({ error: "Meme required" });
 
     const existing = await MediaFavorite.findOne({

@@ -365,7 +365,7 @@ export async function getVideoRecommendations(req, res) {
  */
 export async function toggleVideoFavorite(req, res) {
   try {
-    const { video } = req.body;
+    const video = req.body.video || req.body.track;
     if (!video || !video.id) return res.status(400).json({ error: "Video required" });
 
     const existing = await MediaFavorite.findOne({
@@ -415,7 +415,7 @@ export async function getVideoFavorites(req, res) {
  */
 export async function recordVideoHistory(req, res) {
   try {
-    const { video } = req.body;
+    const video = req.body.video || req.body.track;
     if (!video || !video.id) return res.status(400).json({ error: "Video required" });
 
     await MediaHistory.create({

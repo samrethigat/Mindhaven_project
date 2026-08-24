@@ -101,6 +101,7 @@ export async function register(req, res) {
       city: req.body.city || "",
       state: req.body.state || "",
       country: req.body.country || "",
+      preferredLanguage: req.body.preferredLanguage || "en",
     };
   } else {
     userData = {
@@ -170,15 +171,9 @@ export async function login(req, res) {
     });
   }
 
-  if (req.body.refreshToken) {
-    const isRefreshValid = await User.findOne({
-      refreshToken: req.body.refreshToken,
-    });
-    if (!isRefreshValid) {
-      return res.status(401).json({ error: "Session expired, please login again." });
-    }
+  if (user.role === "parent" && (!user.preferredLanguage || user.preferredLanguage === "ta")) {
+    user.preferredLanguage = "en";
   }
-
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
   user.refreshToken = refreshToken;

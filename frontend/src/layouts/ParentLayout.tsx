@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useNavigate, Link } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import {
@@ -9,28 +9,32 @@ import {
   Calendar,
   Settings,
   LogOut,
-  Bell,
   Globe,
-  Shield,
   Menu,
   X,
-  PhoneCall,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ParentLayout() {
   const { user, logout } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Ensure English language mode inside Parent Portal
+  useEffect(() => {
+    if (language !== "en") {
+      setLanguage("en", false);
+    }
+  }, [language, setLanguage]);
+
   const navItems = [
-    { to: "/parent/dashboard", icon: LayoutDashboard, label: language === "ta" ? "டாஷ்போர்டு" : "Dashboard" },
-    { to: "/parent/students", icon: Users, label: language === "ta" ? "மாணவர்கள்" : "Linked Students" },
-    { to: "/parent/alerts", icon: AlertTriangle, label: language === "ta" ? "நல்வாழ்வு எச்சரிக்கைகள்" : "Wellbeing Alerts" },
-    { to: "/parent/counselors", icon: HeartHandshake, label: language === "ta" ? "ஆலோசகர்கள்" : "Find Counselors" },
-    { to: "/parent/appointments", icon: Calendar, label: language === "ta" ? "அமர்safariகள்" : "Appointments" },
-    { to: "/parent/settings", icon: Settings, label: language === "ta" ? "அமைப்புகள்" : "Settings" },
+    { to: "/parent/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/parent/students", icon: Users, label: "Linked Students" },
+    { to: "/parent/alerts", icon: AlertTriangle, label: "Wellbeing Alerts" },
+    { to: "/parent/counselors", icon: HeartHandshake, label: "Find Counselors" },
+    { to: "/parent/appointments", icon: Calendar, label: "Appointments" },
+    { to: "/parent/settings", icon: Settings, label: "Settings" },
   ];
 
   async function handleLogout() {
@@ -88,7 +92,9 @@ export function ParentLayout() {
             </div>
             <div className="overflow-hidden">
               <p className="font-bold text-xs text-slate-900 truncate">{user?.fullName || "Parent User"}</p>
-              <p className="text-[10px] text-slate-500 truncate">{user?.relationshipToStudent || "Parent"} • {user?.email}</p>
+              <p className="text-[10px] text-slate-500 truncate">
+                {user?.relationshipToStudent || "Parent"} • {user?.email}
+              </p>
             </div>
           </div>
 
@@ -123,15 +129,15 @@ export function ParentLayout() {
           <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl">
             <span className="flex items-center gap-2 text-xs font-semibold text-slate-600">
               <Globe className="w-3.5 h-3.5 text-slate-400" />
-              {language === "ta" ? "மொழி" : "Language"}
+              Language
             </span>
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
               className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
             >
-              <option value="ta">தமிழ்</option>
               <option value="en">English</option>
+              <option value="ta">தமிழ்</option>
               <option value="hi">हिन्दी</option>
               <option value="te">తెలుగు</option>
             </select>
@@ -143,7 +149,7 @@ export function ParentLayout() {
             className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-rose-600 hover:bg-rose-50 transition-all"
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            <span>{language === "ta" ? "வெளியேறு" : "Sign Out"}</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>

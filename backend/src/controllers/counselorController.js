@@ -3,6 +3,11 @@ import Appointment from "../models/Appointment.js";
 import { sendEmail } from "../services/emailService.js";
 import { createNotification } from "../services/notificationService.js";
 import { layout, appointmentTable } from "../services/emailTemplates.js";
+import {
+  isDoctorWorkingDay,
+  parseLocalDateStr,
+  normalizeDateStr,
+} from "../services/appointmentConcurrencyService.js";
 
 function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -220,7 +225,9 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 
 export async function getAvailableCounselors(req, res) {
   try {
-    const { lat, lng, city, state, consultationType, specialization } = req.query;
+    const { lat, lng, city, state, consultationType, specialization, date } = req.query;
+    const targetDateStr = (date && (parseLocalDateStr(date) || normalizeDateStr(date))) || new Date().toISOString().split("T")[0];
+
     const filter = {
       role: "counselor",
       isActive: true,
@@ -246,11 +253,48 @@ export async function getAvailableCounselors(req, res) {
       "fullName email phone qualification specialization experience hospital clinic photo rating consultationFee consultationType about isOnline languages district city state country location availability memberSince"
     );
 
+    const counselorIds = counselors.map((c) => c._id);
+
+    // Aggregate active appointments count for targetDateStr
+    const activeCounts = await Appointment.aggregate([
+      {
+        $match: {
+          counselor: { $in: counselorIds },
+          dateStr: targetDateStr,
+          status: { $in: ["pending", "accepted", "confirmed", "rescheduled"] },
+        },
+      },
+      {
+        $group: {
+          _id: "$counselor",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const countMap = new Map();
+    activeCounts.forEach((item) => {
+      countMap.set(item._id.toString(), item.count);
+    });
+
     let results = counselors.map((c) => {
       const obj = c.toObject();
       delete obj.password;
       delete obj.refreshToken;
       delete obj.resetPasswordToken;
+
+      const activeCount = countMap.get(c._id.toString()) || 0;
+      const configuredDays = c.availability?.days || [];
+      const isWorkingDay = isDoctorWorkingDay(configuredDays, targetDateStr);
+      const isFullyBooked = activeCount >= 5;
+
+      obj.dateEvaluated = targetDateStr;
+      obj.activeAppointmentsCount = activeCount;
+      obj.maxDailyLimit = 5;
+      obj.isWorkingDay = isWorkingDay;
+      obj.isFullyBooked = isFullyBooked;
+      obj.availableSlotsLeft = Math.max(0, 5 - activeCount);
+      obj.isAvailableForBooking = isWorkingDay && !isFullyBooked;
 
       if (lat && lng && c.location && Array.isArray(c.location.coordinates) && (c.location.coordinates[0] !== 0 || c.location.coordinates[1] !== 0)) {
         const cLng = c.location.coordinates[0];
@@ -270,7 +314,7 @@ export async function getAvailableCounselors(req, res) {
       });
     }
 
-    res.json({ counselors: results });
+    res.json({ counselors: results, targetDate: targetDateStr, maxDailyLimit: 5 });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -280,7 +324,9 @@ export async function getCounselorPublic(req, res) {
   try {
     const counselor = await User.findOne({ role: "counselor", _id: req.params.id, isDeleted: false });
     if (!counselor) return res.status(404).json({ error: "Counselor not found" });
-    res.json({ counselor: counselor.toPublicJSON() });
+    const userObj = counselor.toPublicJSON();
+    userObj.maxDailyLimit = 5;
+    res.json({ counselor: userObj });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

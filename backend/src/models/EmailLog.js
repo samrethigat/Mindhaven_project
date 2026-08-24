@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const emailLogSchema = new mongoose.Schema(
   {
-    recipient: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    recipient: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false, default: null },
     email: { type: String, required: true },
     type: { type: String, default: "" },
     subject: { type: String, default: "" },

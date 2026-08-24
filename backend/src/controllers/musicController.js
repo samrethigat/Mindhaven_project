@@ -529,7 +529,7 @@ export async function getMusicHistory(req, res) {
  */
 export async function toggleFavorite(req, res) {
   try {
-    const { song } = req.body;
+    const song = req.body.song || req.body.track;
     if (!song || !song.id) return res.status(400).json({ error: "Song is required" });
 
     const existing = await MediaFavorite.findOne({

@@ -48,23 +48,35 @@ app.use("/api", limiter);
 
 app.get("/api/health", (req, res) => res.json({ status: "ok", time: new Date() }));
 
+// Core API Routes with plural & singular aliases for robust interop
 app.use("/api/auth", authRoutes);
 app.use("/api/ai", aiAssistantRoutes);
 app.use("/api/music", musicRoutes);
 app.use("/api/video", videoRoutes);
+app.use("/api/videos", videoRoutes);
+app.use("/api/meme", memeRoutes);
 app.use("/api/memes", memeRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/parent", parentRoutes);
+app.use("/api/parents", parentRoutes);
 app.use("/api/counselor", counselorRoutes);
+app.use("/api/counselors", counselorRoutes);
 app.use("/api/candidate", candidateRoutes);
+app.use("/api/candidates", candidateRoutes);
 app.use("/api/patient", patientRoutes);
+app.use("/api/patients", patientRoutes);
+app.use("/api/appointment", appointmentRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/chat", chatRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/notification", notificationRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/call", callRoutes);
 app.use("/api/calls", callRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/care", careRoutes);
 app.use("/api/assessment", assessmentRoutes);
+app.use("/api/assessments", assessmentRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

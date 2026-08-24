@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -8,10 +8,10 @@ import toast from "react-hot-toast";
 
 export function ParentRegister() {
   const { register } = useAuth();
-  const { language, t } = useLanguage();
+  const { setLanguage } = useLanguage();
   const navigate = useNavigate();
 
-  usePageTitle(language === "ta" ? "பெற்றோர் பதிவு (Parent Registration)" : "Parent Registration");
+  usePageTitle("Parent Registration");
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -25,6 +25,11 @@ export function ParentRegister() {
     state: "",
   });
   const [loading, setLoading] = useState(false);
+
+  // Ensure English is set when accessing Parent Register
+  useEffect(() => {
+    setLanguage("en", false);
+  }, [setLanguage]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,7 +47,8 @@ export function ParentRegister() {
     setLoading(true);
     try {
       await register(formData, "parent");
-      toast.success(language === "ta" ? "பெற்றோர் கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டது! 🎉" : "Parent account created successfully! 🎉");
+      await setLanguage("en", false);
+      toast.success("Parent account created successfully! 🎉");
       navigate("/parent/dashboard");
     } catch (err: any) {
       toast.error(err.response?.data?.error || "Registration failed. Please try again.");
@@ -60,12 +66,10 @@ export function ParentRegister() {
           </div>
         </div>
         <h2 className="mt-4 text-center text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          {language === "ta" ? "பெற்றோர் கணக்குப் பதிவு" : "Parent Portal Registration"}
+          Parent Portal Registration
         </h2>
         <p className="mt-1 text-center text-xs sm:text-sm text-slate-500">
-          {language === "ta"
-            ? "மாணவர் மனநலம் மற்றும் நல்வாழ்வு ஆதரவு தளத்தில் இணையுங்கள்"
-            : "Connect securely with your student's campus wellness support"}
+          Connect securely with your student's campus wellness support
         </p>
       </div>
 
@@ -76,7 +80,7 @@ export function ParentRegister() {
               {/* Full Name */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "முழுப் பெயர் *" : "Full Name *"}
+                  Full Name *
                 </label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -95,19 +99,19 @@ export function ParentRegister() {
               {/* Relationship */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "உறவுமுறை *" : "Relationship to Student *"}
+                  Relationship to Student *
                 </label>
                 <select
                   name="relationshipToStudent"
                   value={formData.relationshipToStudent}
                   onChange={handleChange}
-                  className="input text-xs sm:text-sm w-full"
+                  className="input text-xs sm:text-sm w-full font-semibold"
                 >
-                  <option value="Father">{language === "ta" ? "தந்தை (Father)" : "Father"}</option>
-                  <option value="Mother">{language === "ta" ? "தாய் (Mother)" : "Mother"}</option>
-                  <option value="Guardian">{language === "ta" ? "பாதுகாவலர் (Guardian)" : "Guardian"}</option>
-                  <option value="Family Member">{language === "ta" ? "குடும்ப உறுப்பினர்" : "Family Member"}</option>
-                  <option value="Other">{language === "ta" ? "மற்றவை" : "Other"}</option>
+                  <option value="Father">Father</option>
+                  <option value="Mother">Mother</option>
+                  <option value="Guardian">Guardian</option>
+                  <option value="Family Member">Family Member</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
             </div>
@@ -116,7 +120,7 @@ export function ParentRegister() {
               {/* Email */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "மின்னஞ்சல் *" : "Email Address *"}
+                  Email Address *
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -135,7 +139,7 @@ export function ParentRegister() {
               {/* Password */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "கடவுச்சொல் *" : "Password (Min. 6 chars) *"}
+                  Password (Min. 6 chars) *
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -156,7 +160,7 @@ export function ParentRegister() {
               {/* Phone */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "தொலைபேசி எண் *" : "Phone Number *"}
+                  Phone Number *
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -175,7 +179,7 @@ export function ParentRegister() {
               {/* Occupation */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "தொழில்" : "Occupation"}
+                  Occupation
                 </label>
                 <div className="relative">
                   <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -195,7 +199,7 @@ export function ParentRegister() {
               {/* City */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "நகரம்" : "City"}
+                  City
                 </label>
                 <div className="relative">
                   <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -213,7 +217,7 @@ export function ParentRegister() {
               {/* State */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                  {language === "ta" ? "மாநிலம்" : "State"}
+                  State
                 </label>
                 <input
                   type="text"
@@ -231,16 +235,16 @@ export function ParentRegister() {
               disabled={loading}
               className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-amber-500/25 hover:bg-amber-600 active:scale-95 transition-all disabled:opacity-50 mt-2"
             >
-              <span>{loading ? "Creating Account..." : (language === "ta" ? "கணக்கை உருவாக்கு" : "Register as Parent")}</span>
+              <span>{loading ? "Creating Account..." : "Register as Parent"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
           <div className="mt-6 border-t border-slate-100 pt-4 text-center">
             <p className="text-xs text-slate-500">
-              {language === "ta" ? "ஏற்கனவே கணக்கு உள்ளதா?" : "Already have an account?"}{" "}
+              Already have an account?{" "}
               <Link to="/login/parent" className="font-bold text-amber-600 hover:underline">
-                {language === "ta" ? "இங்கு உள்நுழைக" : "Sign In"}
+                Sign In
               </Link>
             </p>
           </div>

@@ -80,7 +80,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       if (notify) {
         const langObj = SUPPORTED_LANGUAGES.find((l) => l.code === cleanCode);
         const name = langObj?.nativeName || cleanCode;
-        toast.success(`🌐 மொழி மாற்றப்பட்டது: ${name}`);
+        if (cleanCode === "ta") {
+          toast.success(`🌐 மொழி மாற்றப்பட்டது: ${name}`);
+        } else {
+          toast.success(`🌐 Language switched to: ${name}`);
+        }
       }
     },
     [user, setUser]

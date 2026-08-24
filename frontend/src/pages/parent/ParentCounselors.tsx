@@ -195,6 +195,20 @@ export function ParentCounselors() {
                   </div>
                 </div>
 
+                {/* Daily Capacity Status */}
+                <div className="mb-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-500 font-medium">Daily Limit: 5</span>
+                  {c.isFullyBooked ? (
+                    <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-black text-[10px]">
+                      🔴 Fully Booked (5/5)
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black text-[10px]">
+                      🟢 Available ({c.activeAppointmentsCount || 0}/5 booked)
+                    </span>
+                  )}
+                </div>
+
                 {/* Available Days */}
                 {c.availability?.days && c.availability.days.length > 0 && (
                   <div className="mb-4 text-[11px] text-slate-500">
