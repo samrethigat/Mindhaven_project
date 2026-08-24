@@ -37,5 +37,8 @@ api.interceptors.response.use(
 );
 
 export function getErrorMessage(error: any, fallback = "Something went wrong") {
-  return error?.response?.data?.error || error?.response?.data?.message || fallback;
+  if (error?.code === "ERR_NETWORK" || error?.message === "Network Error" || !error?.response) {
+    return "Backend connection error. Please ensure your backend server is deployed and VITE_API_URL is configured.";
+  }
+  return error?.response?.data?.error || error?.response?.data?.message || error?.message || fallback;
 }
