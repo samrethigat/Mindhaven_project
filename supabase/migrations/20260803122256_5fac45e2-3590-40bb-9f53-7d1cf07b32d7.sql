@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IF NOT EXISTS sleep_logs_user_date_uidx ON public.sleep_logs (user_id, log_date);
+CREATE UNIQUE INDEX IF NOT EXISTS checkins_user_date_uidx ON public.checkins (user_id, checkin_date);

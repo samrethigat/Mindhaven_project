@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MINDHAVEN — QR Code</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #2563eb, #0ea5e9);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        color: #0f172a;
+      }
+      .card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 28px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      }
+      h1 { font-size: 24px; margin-bottom: 4px; }
+      .sub { color: #64748b; font-size: 14px; margin-bottom: 20px; }
+      #qr { width: 220px; height: 220px; margin: 0 auto 16px; border-radius: 16px; border: 1px solid #e2e8f0; padding: 8px; }
+      .url { word-break: break-all; font-size: 13px; color: #2563eb; font-weight: 600; margin-bottom: 8px; }
+      input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+      .note { font-size: 12px; color: #94a3b8; margin-top: 14px; line-height: 1.5; }
+      @media (max-width: 480px) {
+        .card { padding: 20px; }
+        #qr { width: 180px; height: 180px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>🧠 MINDHAVEN</h1>
+      <p class="sub">Scan to open on your phone</p>
+      <img id="qr" alt="MINDHAVEN QR code" />
+      <p class="url" id="url"></p>
+      <input id="urlInput" placeholder="https://mindhaven.yourdomain.com" />
+      <p class="note">
+        Paste your final public MINDHAVEN URL above and press Enter to regenerate the QR code.
+        Then screenshot it and share on WhatsApp, Telegram, email, college groups, posters and
+        your project presentation. The QR opens the website directly on a student's phone.
+      </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+      const input = document.getElementById("urlInput");
+      const urlEl = document.getElementById("url");
+      const DEFAULT_URL = "https://mindhaven.yourdomain.com";
+
+      function render(url) {
+        urlEl.textContent = url;
+        QRCode.toDataURL(url, { width: 480, margin: 2, color: { dark: "#0f172a", light: "#ffffff" } })
+          .then((dataUrl) => {
+            document.getElementById("qr").src = dataUrl;
+          })
+          .catch(() => {
+            document.getElementById("qr").alt = "Could not generate QR";
+          });
+      }
+
+      input.addEventListener("change", () => render(input.value.trim() || DEFAULT_URL));
+      render(DEFAULT_URL);
+    </script>
+  </body>
+</html>
+

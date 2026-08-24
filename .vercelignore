@@ -1,0 +1,12 @@
+# MINDHAVEN deploy guide — Vercel root ignore
+# Deploy the frontend by pointing Vercel at the `frontend` root directory.
+# These paths are not needed by the frontend build.
+backend
+src
+public
+supabase
+qr.html
+DEPLOYMENT.md
+*.lock
+bun.lock
+

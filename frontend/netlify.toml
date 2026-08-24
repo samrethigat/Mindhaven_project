@@ -1,0 +1,11 @@
+# Netlify config for MINDHAVEN frontend (SPA fallback)
+# Alternative to Vercel. Set env vars under Site → Site settings → Environment.
+[build]
+  command = "npm run build"
+  publish = "dist"
+  base = "frontend"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
