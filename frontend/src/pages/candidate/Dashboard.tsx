@@ -32,6 +32,70 @@ const MOODS = [
   { emoji: "⚡", label: "மன அழுத்தம் (Stressed)", labelEn: "Stressed" },
 ];
 
+const DEFAULT_RECENT_TRACKS = [
+  {
+    id: "track_1",
+    title: "Weightless Horizon",
+    artist: "Mindhaven Ambient Soundscapes",
+    category: "Anxiety Relief",
+    duration: "3:45",
+    coverUrl: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500&q=80",
+    audioUrl: "https://actions.google.com/sounds/v1/ambiences/rain_heavy.ogg",
+  },
+  {
+    id: "track_2",
+    title: "Gentle Morning Sunlight",
+    artist: "Peaceful Meditation",
+    category: "Calm Focus",
+    duration: "4:20",
+    coverUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80",
+    audioUrl: "https://actions.google.com/sounds/v1/ambiences/morning_birds.ogg",
+  },
+  {
+    id: "track_3",
+    title: "Deep Sleep & 432Hz Waves",
+    artist: "Sound Sanctuary",
+    category: "Deep Sleep",
+    duration: "5:10",
+    coverUrl: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500&q=80",
+    audioUrl: "https://actions.google.com/sounds/v1/ambiences/soft_rain.ogg",
+  },
+];
+
+const DEFAULT_RECOMMENDED_VIDEOS = [
+  {
+    id: "vid_1",
+    title: "5-Minute Guided Breathing for Instant Stress Relief",
+    category: "Mindfulness",
+    duration: "5:12",
+    thumbnailUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80",
+    videoUrl: "https://www.youtube.com/watch?v=inpok4MKVLM",
+  },
+  {
+    id: "vid_2",
+    title: "Overcoming Exam Anxiety & Academic Pressure",
+    category: "Student Wellness",
+    duration: "8:45",
+    thumbnailUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500&q=80",
+    videoUrl: "https://www.youtube.com/watch?v=8jPQjJS3tdc",
+  },
+];
+
+const DEFAULT_TRENDING_MEMES = [
+  {
+    id: "meme_1",
+    caption: "Me telling myself 'one small step at a time' today 🐱",
+    imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&q=80",
+    likes: 42,
+  },
+  {
+    id: "meme_2",
+    caption: "Brain at 3 AM vs Brain during study time 🧠✨",
+    imageUrl: "https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=500&q=80",
+    likes: 68,
+  },
+];
+
 export function CandidateDashboard() {
   const { user } = useAuth();
   const { playSong } = useMusic();
@@ -41,26 +105,32 @@ export function CandidateDashboard() {
 
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [moodLogged, setMoodLogged] = useState(false);
-  const [recentTracks, setRecentTracks] = useState<any[]>([]);
-  const [recommendedVideos, setRecommendedVideos] = useState<any[]>([]);
-  const [trendingMemes, setTrendingMemes] = useState<any[]>([]);
+  const [recentTracks, setRecentTracks] = useState<any[]>(DEFAULT_RECENT_TRACKS);
+  const [recommendedVideos, setRecommendedVideos] = useState<any[]>(DEFAULT_RECOMMENDED_VIDEOS);
+  const [trendingMemes, setTrendingMemes] = useState<any[]>(DEFAULT_TRENDING_MEMES);
   const [lastConversation, setLastConversation] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
 
   useEffect(() => {
     // 1. Music Tracks
     api.get("/music/recommendations")
-      .then((res) => setRecentTracks(res.data.recommendations?.slice(0, 4) || []))
+      .then((res) => {
+        if (res.data.recommendations?.length) setRecentTracks(res.data.recommendations.slice(0, 4));
+      })
       .catch(() => {});
 
     // 2. Videos
     api.get("/video/recommendations")
-      .then((res) => setRecommendedVideos(res.data.recommendations?.slice(0, 3) || []))
+      .then((res) => {
+        if (res.data.recommendations?.length) setRecommendedVideos(res.data.recommendations.slice(0, 3));
+      })
       .catch(() => {});
 
     // 3. Memes
     api.get("/memes/list")
-      .then((res) => setTrendingMemes(res.data.memes?.slice(0, 4) || []))
+      .then((res) => {
+        if (res.data.memes?.length) setTrendingMemes(res.data.memes.slice(0, 4));
+      })
       .catch(() => {});
 
     // 4. Last Conversation
