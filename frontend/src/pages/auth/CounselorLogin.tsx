@@ -48,6 +48,31 @@ export function CounselorLogin() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? "Signing in…" : "Sign in"}
         </button>
+
+        <div className="relative my-3">
+          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
+          <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-slate-400 font-semibold">Or Quick Access</span></div>
+        </div>
+
+        <button
+          type="button"
+          onClick={async () => {
+            setLoading(true);
+            try {
+              const user = await login("meera@mindhaven.app", "Counselor@123", "counselor");
+              toast.success("Logged in as Dr. Meera Iyer (Counselor)!");
+              navigate("/counselor/dashboard");
+            } catch (err) {
+              toast.error(getErrorMessage(err));
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          className="btn-outline w-full text-xs font-bold text-blue-700 border-blue-200 hover:bg-blue-50"
+        >
+          ⚡ 1-Click Demo Counselor Login
+        </button>
       </form>
       <p className="mt-4 text-center text-sm text-slate-600">
         Don't have an account?{" "}

@@ -115,6 +115,32 @@ export function ParentLogin() {
               <span>{loading ? "Signing in..." : "Sign In to Parent Portal"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
+
+            <div className="relative my-3">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-slate-400 font-semibold">Or Quick Access</span></div>
+            </div>
+
+            <button
+              type="button"
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  await login("parent@mindhaven.app", "Parent@123", "parent");
+                  await setLanguage("en", false);
+                  toast.success("Welcome to Parent Demo Portal!");
+                  navigate("/parent/dashboard");
+                } catch (err: any) {
+                  toast.error(err.response?.data?.error || "Login failed.");
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+              className="btn-outline w-full text-xs font-bold text-amber-700 border-amber-200 hover:bg-amber-50"
+            >
+              ⚡ 1-Click Demo Parent Login
+            </button>
           </form>
 
           <div className="mt-6 border-t border-slate-100 pt-4 text-center space-y-3">

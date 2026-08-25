@@ -48,6 +48,31 @@ export function CandidateLogin() {
         <button type="submit" disabled={loading} className="btn-primary w-full bg-teal-600 hover:bg-teal-700 border-none">
           {loading ? "Signing in…" : "Sign in as Candidate"}
         </button>
+
+        <div className="relative my-3">
+          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
+          <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-slate-400 font-semibold">Or Quick Access</span></div>
+        </div>
+
+        <button
+          type="button"
+          onClick={async () => {
+            setLoading(true);
+            try {
+              const user = await login("student@mindhaven.app", "Candidate@123", "candidate");
+              toast.success("Logged in as Demo Student!");
+              navigate("/candidate/dashboard");
+            } catch (err) {
+              toast.error(getErrorMessage(err));
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          className="btn-outline w-full text-xs font-bold text-teal-700 border-teal-200 hover:bg-teal-50"
+        >
+          ⚡ 1-Click Demo Candidate Login
+        </button>
       </form>
       <p className="mt-4 text-center text-sm text-slate-600">
         Don't have an account?{" "}
