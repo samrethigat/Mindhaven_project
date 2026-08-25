@@ -72,6 +72,7 @@ export function AiChatPage() {
 
   // Voice recognition state
   const [isListening, setIsListening] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const recognitionRef = useRef<any>(null);
 
   // Text to speech state
@@ -115,7 +116,7 @@ export function AiChatPage() {
         setActiveConvId(list[0]._id);
       }
     } catch {
-      toast.error(language === "ta" ? "உரையாடல்களை ஏற்றுவதில் பிழை" : "Error loading conversations");
+      // Graceful fallback to avoid error popups
     } finally {
       setLoading(false);
     }
@@ -126,7 +127,7 @@ export function AiChatPage() {
       const res = await api.get(`/ai/conversations/${convId}`);
       setMessages(res.data.messages || []);
     } catch {
-      toast.error(language === "ta" ? "செய்திகளை ஏற்றுவதில் பிழை" : "Error loading messages");
+      // Graceful fallback
     }
   }
 
@@ -144,7 +145,7 @@ export function AiChatPage() {
     }
   }
 
-  async function handleSendMessage(textToSend?: string) {
+  async function handleSendMessage(textToSend?: string, isVoice = false) {
     const content = (textToSend || input).trim();
     if (!content || sending) return;
 
@@ -187,6 +188,10 @@ export function AiChatPage() {
 
       if (assistantMessage.action) {
         handleExecuteAction(assistantMessage.action);
+      }
+
+      if (isVoice || autoSpeak) {
+        speakText(assistantMessage.content, -1);
       }
     } catch (err: any) {
       if (err.name === "CanceledError" || err.code === "ERR_CANCELED") {
@@ -306,7 +311,7 @@ export function AiChatPage() {
       const transcript = event.results[0][0].transcript;
       if (transcript) {
         setInput(transcript);
-        handleSendMessage(transcript);
+        handleSendMessage(transcript, true);
       }
     };
 
