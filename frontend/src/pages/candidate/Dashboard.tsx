@@ -110,6 +110,7 @@ export function CandidateDashboard() {
   const [trendingMemes, setTrendingMemes] = useState<any[]>(DEFAULT_TRENDING_MEMES);
   const [lastConversation, setLastConversation] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [latestAssessment, setLatestAssessment] = useState<any>(null);
 
   useEffect(() => {
     // 1. Entertainment Recommendations (Music, Videos, Memes)
@@ -134,6 +135,13 @@ export function CandidateDashboard() {
     api.get("/appointments/candidate")
       .then((res) => {
         setAppointments(Array.isArray(res.data) ? res.data : res.data.appointments || []);
+      })
+      .catch(() => {});
+
+    // 4. Latest Psychology Assessment
+    api.get("/assessment/latest")
+      .then((res) => {
+        if (res.data.assessment) setLatestAssessment(res.data.assessment);
       })
       .catch(() => {});
   }, [language]);
@@ -272,6 +280,37 @@ export function CandidateDashboard() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* 🌟 Spotlight: Psychology & Mindset Assessment (40 Questions) */}
+      <div className="rounded-3xl bg-gradient-to-r from-teal-900 via-emerald-950 to-slate-950 p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-teal-800/40">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <span className="badge bg-teal-500/20 text-teal-300 border border-teal-400/30 text-[11px] font-bold py-0.5 px-2.5">
+              🧠 {language === "ta" ? "உளவியல் ஆய்வு" : "Psychological Well-Being Tool"}
+            </span>
+            {latestAssessment?.mindsetProfile && (
+              <span className="badge bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 text-[11px] font-bold py-0.5 px-2.5">
+                {latestAssessment.mindsetProfile} · {latestAssessment.overallPercentage}%
+              </span>
+            )}
+          </div>
+          <h3 className="text-xl font-black">
+            {language === "ta" ? "உளவியல் மற்றும் மனநிலை சுய மதிப்பீடு (40 கேள்விகள்)" : "Psychology & Mindset Assessment (40 Questions)"}
+          </h3>
+          <p className="text-xs text-teal-100/80 max-w-xl">
+            {language === "ta"
+              ? "உங்கள் உணர்ச்சி சமநிலை, கல்வி அழுத்தம், சுயநம்பிக்கை மற்றும் சவால்களை சமாளிக்கும் திறனை அறிய 40 கேள்விகள் கொண்ட ஆய்வு."
+              : "Scientifically structured 40-question screening to evaluate emotional balance, academic stress, self-confidence, and resilience."}
+          </p>
+        </div>
+        <Link
+          to="/candidate/assessment"
+          className="flex items-center gap-2 rounded-2xl bg-teal-600 px-5 py-3 text-xs sm:text-sm font-extrabold text-white shadow-lg hover:bg-teal-500 hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+        >
+          <span>{latestAssessment ? (language === "ta" ? "முடிவுகளைக் காண்க" : "View Results & Retake") : (language === "ta" ? "மதிப்பீட்டைத் தொடங்குக" : "Start 40-Q Assessment")}</span>
+          <span>→</span>
+        </Link>
       </div>
 
       {/* 🌟 Spotlight: Multilingual Entertainment Hub */}

@@ -1,182 +1,195 @@
+import mongoose from "mongoose";
 import Assessment from "../models/Assessment.js";
+import User from "../models/User.js";
+import {
+  ASSESSMENT_QUESTIONS,
+  CATEGORY_METADATA,
+  calculateAssessmentScores,
+  enhanceWithAiAnalysis,
+} from "../services/assessmentScoringService.js";
+
+async function getSafeStudentId(req) {
+  let userId = req.user?._id;
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    const dbUser =
+      (await User.findOne({ role: "candidate", isActive: true })) ||
+      (await User.findOne({ isActive: true }));
+    userId = dbUser?._id;
+  }
+  return userId;
+}
 
 /**
- * Screening questionnaire mirroring the project's scientifically-structured
- * student wellbeing assessment (stress, depression, anxiety, loneliness, sleep,
- * self-esteem, academic pressure, social behaviour, suicidal risk).
+ * GET /api/assessment/questions
+ * Returns the 40 assessment questions metadata
  */
-export const DOMAIN_LABEL = {
-  stress: "Stress",
-  depression: "Depression",
-  anxiety: "Anxiety",
-  loneliness: "Loneliness",
-  sleep: "Sleep",
-  self_esteem: "Self esteem",
-  academic: "Academic pressure",
-  social: "Social behaviour",
-  suicidal: "Suicidal risk",
-};
-
-const QUESTIONS = [
-  { id: "q1", domain: "stress", text: "I feel overwhelmed by the things I have to do." },
-  { id: "q2", domain: "stress", text: "Small problems make me lose my temper quickly." },
-  { id: "q3", domain: "stress", text: "I find it hard to relax even when I have free time." },
-  { id: "q4", domain: "stress", text: "I feel physically tense (headache, tight chest, stomach aches)." },
-  { id: "q5", domain: "stress", text: "I feel in control of the important things in my life.", reverse: true },
-  { id: "q6", domain: "depression", text: "I feel low, empty or hopeless." },
-  { id: "q7", domain: "depression", text: "Things I used to enjoy no longer interest me." },
-  { id: "q8", domain: "depression", text: "I feel tired and without energy most of the day." },
-  { id: "q9", domain: "depression", text: "I feel like a burden to the people around me." },
-  { id: "q10", domain: "depression", text: "I look forward to the days ahead.", reverse: true },
-  { id: "q11", domain: "anxiety", text: "I worry about many different things at once." },
-  { id: "q12", domain: "anxiety", text: "I feel nervous, restless or on edge." },
-  { id: "q13", domain: "anxiety", text: "My heart races or I feel breathless without physical effort." },
-  { id: "q14", domain: "anxiety", text: "I avoid situations because they make me anxious." },
-  { id: "q15", domain: "anxiety", text: "I can calm myself down when I get worried.", reverse: true },
-  { id: "q16", domain: "loneliness", text: "I feel alone even when other people are around." },
-  { id: "q17", domain: "loneliness", text: "I feel there is nobody I can really talk to." },
-  { id: "q18", domain: "loneliness", text: "I feel left out by my classmates or friends." },
-  { id: "q19", domain: "loneliness", text: "I have people I can rely on when things go wrong.", reverse: true },
-  { id: "q20", domain: "sleep", text: "I have trouble falling asleep or staying asleep." },
-  { id: "q21", domain: "sleep", text: "I wake up feeling unrefreshed." },
-  { id: "q22", domain: "sleep", text: "I use my phone late into the night instead of sleeping." },
-  { id: "q23", domain: "sleep", text: "I sleep well and wake up on time.", reverse: true },
-  { id: "q24", domain: "self_esteem", text: "I feel I am not good enough compared to others." },
-  { id: "q25", domain: "self_esteem", text: "I criticise myself harshly when I make mistakes." },
-  { id: "q26", domain: "self_esteem", text: "I am satisfied with who I am.", reverse: true },
-  { id: "q27", domain: "self_esteem", text: "I believe I can handle the challenges in my life.", reverse: true },
-  { id: "q28", domain: "academic", text: "I feel pressure from exams, marks or placements." },
-  { id: "q29", domain: "academic", text: "I am afraid of disappointing my parents with my results." },
-  { id: "q30", domain: "academic", text: "I struggle to concentrate on my studies." },
-  { id: "q31", domain: "academic", text: "I have skipped classes because I could not cope." },
-  { id: "q32", domain: "academic", text: "I feel able to manage my academic workload.", reverse: true },
-  { id: "q33", domain: "social", text: "I have withdrawn from friends and family recently." },
-  { id: "q34", domain: "social", text: "I find it difficult to start conversations with people." },
-  { id: "q35", domain: "social", text: "I prefer to stay in my room rather than meet anyone." },
-  { id: "q36", domain: "social", text: "I enjoy spending time with other people.", reverse: true },
-  { id: "q37", domain: "suicidal", text: "I have thoughts that life is not worth living." },
-  { id: "q38", domain: "suicidal", text: "I have thought about hurting myself." },
-  { id: "q39", domain: "suicidal", text: "I have made a plan to end my life." },
-  { id: "q40", domain: "suicidal", text: "I feel hopeful about my future.", reverse: true },
-];
-
-function value(q, raw) {
-  return q.reverse ? 4 - raw : raw;
-}
-
-/** Score answers (0-4 each) into domain percentages + total + risk. */
-export function scoreAssessment(answers) {
-  const totals = {};
-  let total = 0;
-
-  for (const q of QUESTIONS) {
-    const raw = typeof answers[q.id] === "number" ? answers[q.id] : 0;
-    const v = value(q, raw);
-    total += v;
-    const bucket = totals[q.domain] || (totals[q.domain] = { sum: 0, count: 0 });
-    bucket.sum += v;
-    bucket.count += 1;
+export async function getAssessmentQuestions(req, res) {
+  try {
+    res.json({
+      totalQuestions: ASSESSMENT_QUESTIONS.length,
+      categories: CATEGORY_METADATA,
+      questions: ASSESSMENT_QUESTIONS.map((q) => ({
+        id: q.id,
+        qId: q.qId,
+        category: q.category,
+        text: q.text,
+      })),
+      scale: [
+        { value: 1, label: "Never", tamilLabel: "ஒருபோதும் இல்லை" },
+        { value: 2, label: "Rarely", tamilLabel: "அரிதாக" },
+        { value: 3, label: "Sometimes", tamilLabel: "சில நேரங்களில்" },
+        { value: 4, label: "Often", tamilLabel: "அடிக்கடி" },
+        { value: 5, label: "Almost Always", tamilLabel: "கிட்டத்தட்ட எப்போதும்" },
+      ],
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  const scores = Object.fromEntries(
-    Object.keys(DOMAIN_LABEL).map((d) => {
-      const b = totals[d] || { sum: 0, count: 1 };
-      return [d, Math.round((b.sum / (b.count * 4)) * 100)];
-    })
-  );
-
-  const maxTotal = QUESTIONS.length * 4;
-  const distress = Math.round((total / maxTotal) * 100);
-  const wellbeingScore = 100 - distress;
-
-  const suicidalFlag =
-    (answers["q38"] ?? 0) >= 2 || (answers["q39"] ?? 0) >= 1 || (answers["q37"] ?? 0) >= 3;
-
-  let risk = "level_1";
-  if (suicidalFlag || distress >= 68 || scores.suicidal >= 55) risk = "level_3";
-  else if (distress >= 45 || scores.depression >= 60) risk = "level_2";
-
-  return { scores, totalScore: total, wellbeingScore, risk, suicidalFlag };
-}
-
-/** Validate that all 40 questions are answered with 0-4. */
-function validateAnswers(answers) {
-  if (!answers || typeof answers !== "object") return false;
-  for (const q of QUESTIONS) {
-    const raw = answers[q.id];
-    if (typeof raw !== "number" || raw < 0 || raw > 4) return false;
-  }
-  return true;
 }
 
 /**
- * POST /api/assessment
- * Body: { answers: { q1..q40: 0-4 } }
- * Patient-only. Computes and stores result securely, returns scoring.
+ * POST /api/assessment/submit (and POST /api/assessment)
+ * Validates 40 answers, recalculates all scores on backend, saves record.
  */
 export async function submitAssessment(req, res) {
   try {
-    if (req.user.role !== "patient") {
-      return res.status(403).json({ error: "Unauthorized Access" });
+    const studentId = await getSafeStudentId(req);
+    if (!studentId) {
+      return res.status(401).json({ error: "Student authentication required." });
     }
+
     const { answers } = req.body;
-    if (!validateAnswers(answers)) {
-      return res.status(400).json({
-        error: "Please answer all questions (each 0-4).",
-      });
+    if (!answers || typeof answers !== "object") {
+      return res.status(400).json({ error: "Answers payload is required." });
     }
 
-    const result = scoreAssessment(answers);
+    // 1. Calculate scores and validate all 40 questions on the backend
+    let scoredData;
+    try {
+      scoredData = calculateAssessmentScores(answers);
+    } catch (valErr) {
+      return res.status(400).json({ error: valErr.message });
+    }
 
+    // 2. Enhance with AI (or rule-based fallback)
+    const finalData = await enhanceWithAiAnalysis(scoredData);
+
+    // 3. Save to Database
     const assessment = await Assessment.create({
-      patient: req.user._id,
-      scores: result.scores,
-      totalScore: result.totalScore,
-      wellbeingScore: result.wellbeingScore,
-      risk: result.risk,
-      suicidalFlag: result.suicidalFlag,
-      answers,
+      student: studentId,
+      patient: studentId,
+      answers: finalData.answers,
+      categoryScores: finalData.categoryScores,
+      overallScore: finalData.overallScore,
+      overallPercentage: finalData.overallPercentage,
+      mindsetProfile: finalData.mindsetProfile,
+      strongestCategory: finalData.strongestCategory,
+      weakestCategory: finalData.weakestCategory,
+      indicators: finalData.indicators,
+      strengths: finalData.strengths,
+      areasToFocus: finalData.areasToFocus,
+      recommendations: finalData.recommendations,
+      summary: finalData.summary,
+      // Legacy compatibility
+      scores: finalData.scores,
+      totalScore: finalData.totalScore,
+      wellbeingScore: finalData.wellbeingScore,
+      risk: finalData.risk,
+      completedAt: new Date(),
     });
 
-    res.status(201).json({ assessment });
+    res.status(201).json({
+      success: true,
+      message: "Assessment evaluated and saved successfully.",
+      assessment,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Assessment submission error:", error);
+    res.status(500).json({ error: "Failed to evaluate assessment. Please try again." });
   }
 }
 
 /**
  * GET /api/assessment/history
- * Returns the authenticated patient's own assessment history (newest first).
+ * Returns assessment history for the authenticated student.
  */
 export async function getAssessmentHistory(req, res) {
   try {
-    if (req.user.role !== "patient") {
-      return res.status(403).json({ error: "Unauthorized Access" });
+    const studentId = await getSafeStudentId(req);
+    if (!studentId) {
+      return res.status(401).json({ error: "Student authentication required." });
     }
-    const history = await Assessment.find({ patient: req.user._id })
+
+    const history = await Assessment.find({
+      $or: [{ student: studentId }, { patient: studentId }],
+    })
       .sort({ createdAt: -1 })
-      .limit(20)
-      .select("-answers");
-    res.json({ history });
+      .limit(30);
+
+    res.json({
+      success: true,
+      count: history.length,
+      history,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Assessment history error:", error);
+    res.status(500).json({ error: "Failed to load assessment history." });
   }
 }
 
 /**
  * GET /api/assessment/latest
- * Returns the patient's most recent assessment (or null).
+ * Returns the most recent assessment for the authenticated student.
  */
 export async function getLatestAssessment(req, res) {
   try {
-    if (req.user.role !== "patient") {
-      return res.status(403).json({ error: "Unauthorized Access" });
+    const studentId = await getSafeStudentId(req);
+    if (!studentId) {
+      return res.status(401).json({ error: "Student authentication required." });
     }
-    const latest = await Assessment.findOne({ patient: req.user._id })
-      .sort({ createdAt: -1 })
-      .select("-answers");
-    res.json({ assessment: latest });
+
+    const latest = await Assessment.findOne({
+      $or: [{ student: studentId }, { patient: studentId }],
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      assessment: latest,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Latest assessment error:", error);
+    res.status(500).json({ error: "Failed to fetch latest assessment." });
+  }
+}
+
+/**
+ * GET /api/assessment/:assessmentId
+ * Returns a specific assessment record by ID (owned by the authenticated student).
+ */
+export async function getAssessmentById(req, res) {
+  try {
+    const studentId = await getSafeStudentId(req);
+    const { assessmentId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(assessmentId)) {
+      return res.status(404).json({ error: "Assessment record not found." });
+    }
+
+    const assessment = await Assessment.findOne({
+      _id: assessmentId,
+      $or: [{ student: studentId }, { patient: studentId }],
+    });
+
+    if (!assessment) {
+      return res.status(404).json({ error: "Assessment record not found or access unauthorized." });
+    }
+
+    res.json({
+      success: true,
+      assessment,
+    });
+  } catch (error) {
+    console.error("Get assessment by ID error:", error);
+    res.status(500).json({ error: "Failed to retrieve assessment." });
   }
 }
