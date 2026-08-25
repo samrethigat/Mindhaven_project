@@ -82,16 +82,67 @@ export function VideoPage() {
       });
 
       const newVideos = res.data.videos || [];
-      setVideos((prev) => (append ? [...prev, ...newVideos] : newVideos));
-      setCategories(res.data.categories || []);
-      setTotalVideos(res.data.total || newVideos.length);
-      setHasMore(Boolean(res.data.hasMore));
+      if (newVideos.length > 0) {
+        setVideos((prev) => (append ? [...prev, ...newVideos] : newVideos));
+        setCategories(res.data.categories || []);
+        setTotalVideos(res.data.total || newVideos.length);
+        setHasMore(Boolean(res.data.hasMore));
+      } else {
+        setFallbackVideos();
+      }
     } catch {
-      toast.error(language === "ta" ? "வீடியோக்களை ஏற்றுவதில் பிழை" : "Error loading videos");
+      setFallbackVideos();
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
+  }
+
+  function setFallbackVideos() {
+    const fallbackList: Video[] = [
+      {
+        id: "vid_01",
+        title: "5-Minute Guided Breathing for Instant Calm & Anxiety Relief",
+        speaker: "Mindhaven Wellness",
+        category: "mindfulness",
+        embedUrl: "https://www.youtube.com/embed/inpok4MKVLM",
+        youtubeUrl: "https://www.youtube.com/watch?v=inpok4MKVLM",
+        thumbnail: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80",
+        duration: "5:12",
+        views: "45K",
+      },
+      {
+        id: "vid_02",
+        title: "Overcoming Student Stress & Exam Pressure",
+        speaker: "Campus Psychology Hub",
+        category: "student",
+        embedUrl: "https://www.youtube.com/embed/8jPQjJS3tdc",
+        youtubeUrl: "https://www.youtube.com/watch?v=8jPQjJS3tdc",
+        thumbnail: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500&q=80",
+        duration: "8:45",
+        views: "28K",
+      },
+      {
+        id: "vid_03",
+        title: "10-Minute Morning Meditation for Focus & Clarity",
+        speaker: "Peaceful Mind",
+        category: "meditation",
+        embedUrl: "https://www.youtube.com/embed/O-6f5wQXSu8",
+        youtubeUrl: "https://www.youtube.com/watch?v=O-6f5wQXSu8",
+        thumbnail: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500&q=80",
+        duration: "10:00",
+        views: "62K",
+      },
+    ];
+    setVideos(fallbackList);
+    setCategories([
+      { id: "all", label: "All Videos", icon: "✨" },
+      { id: "mindfulness", label: "Mindfulness", icon: "🌿" },
+      { id: "student", label: "Student Wellness", icon: "🎓" },
+      { id: "meditation", label: "Meditation", icon: "🧘" },
+    ]);
+    setTotalVideos(fallbackList.length);
+    setHasMore(false);
   }
 
   function handleLoadMore() {
