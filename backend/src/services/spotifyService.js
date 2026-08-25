@@ -238,6 +238,16 @@ function getFallbackPlaylists(language = "ta") {
   return {
     playlists: [
       {
+        id: "pl_mindhaven_curated",
+        name: "MindHaven Curated Top Hits Playlist",
+        description: "Curated Spotify Hits & Mood Elevation Playlist",
+        coverUrl: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500&q=80",
+        spotifyUrl: "https://open.spotify.com/playlist/3Fe5Mt351YaxrlRAmFDZCM",
+        embedUrl: "https://open.spotify.com/embed/playlist/3Fe5Mt351YaxrlRAmFDZCM",
+        trackCount: 50,
+        owner: "MindHaven Special",
+      },
+      {
         id: `pl_${langConfig.code}_01`,
         name: `${langConfig.name} Top 50 Chartbusters`,
         description: `The hottest tracks and trending hits in ${langConfig.name}`,

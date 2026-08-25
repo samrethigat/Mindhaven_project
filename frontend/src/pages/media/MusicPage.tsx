@@ -237,6 +237,51 @@ export function MusicPage() {
         </div>
       </div>
 
+      {/* Featured Spotify Playlist Player */}
+      {!search && (
+        <div className="rounded-3xl bg-slate-950 border border-emerald-500/30 p-5 sm:p-6 shadow-2xl text-white space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1DB954]/20 text-[#1DB954]">
+                <Disc className="w-5 h-5 animate-spin-slow" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                  <span>MindHaven Curated Spotify Playlist</span>
+                  <span className="badge bg-[#1DB954]/20 text-[#1DB954] text-[10px] font-bold">Official Spotify Embed</span>
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {language === "ta"
+                    ? "மாணவர்களுக்கான சிறப்பு ஸ்பாட்டிஃபை பிளேலிஸ்ட் - முழுமையாக கேளுங்கள்"
+                    : "Listen to the complete curated student mental wellness playlist directly on Spotify"}
+                </p>
+              </div>
+            </div>
+            <a
+              href="https://open.spotify.com/playlist/3Fe5Mt351YaxrlRAmFDZCM"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#1DB954] text-black font-extrabold text-xs hover:bg-[#1ed760] transition-all shadow-md shadow-[#1DB954]/30 active:scale-95"
+            >
+              <span>Open in Spotify</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          <div className="rounded-2xl overflow-hidden shadow-inner border border-slate-800 bg-black">
+            <iframe
+              src="https://open.spotify.com/embed/playlist/3Fe5Mt351YaxrlRAmFDZCM?utm_source=generator&theme=0"
+              width="100%"
+              height="352"
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="w-full rounded-2xl"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Featured Spotlight Card */}
       {featuredTrack && !search && activeCategory === "all" && (
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 p-6 sm:p-8 text-white shadow-2xl">
