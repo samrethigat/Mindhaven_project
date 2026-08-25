@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { MusicProvider } from "./context/MusicContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { Landing } from "./pages/Landing";
 import { CandidateLogin } from "./pages/auth/CandidateLogin";
 import { CounselorLogin } from "./pages/auth/CounselorLogin";
@@ -118,85 +119,87 @@ function HomeRedirect() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <MusicProvider>
-        <Routes>
-          <Route path="/" element={<HomeRedirect />} />
-          <Route path="/login/candidate" element={<CandidateLogin />} />
-          <Route path="/login/patient" element={<Navigate to="/login/candidate" replace />} />
-          <Route path="/login/counselor" element={<CounselorLogin />} />
-          <Route path="/login/parent" element={<ParentLogin />} />
-          <Route path="/register/candidate" element={<CandidateRegister />} />
-          <Route path="/register/patient" element={<Navigate to="/register/candidate" replace />} />
-          <Route path="/register/counselor" element={<CounselorRegister />} />
-          <Route path="/register/parent" element={<ParentRegister />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+    <ThemeProvider>
+      <LanguageProvider>
+        <MusicProvider>
+          <Routes>
+            <Route path="/" element={<HomeRedirect />} />
+            <Route path="/login/candidate" element={<CandidateLogin />} />
+            <Route path="/login/patient" element={<Navigate to="/login/candidate" replace />} />
+            <Route path="/login/counselor" element={<CounselorLogin />} />
+            <Route path="/login/parent" element={<ParentLogin />} />
+            <Route path="/register/candidate" element={<CandidateRegister />} />
+            <Route path="/register/patient" element={<Navigate to="/register/candidate" replace />} />
+            <Route path="/register/counselor" element={<CounselorRegister />} />
+            <Route path="/register/parent" element={<ParentRegister />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Candidate Portal Routes */}
-          <Route path="/candidate" element={
-            <ProtectedCandidate><CandidateLayout /></ProtectedCandidate>
-          }>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<CandidateDashboard />} />
-            <Route path="entertainment" element={<EntertainmentHub />} />
-            <Route path="ai-chat" element={<AiChatPage />} />
-            <Route path="music" element={<MusicPage />} />
-            <Route path="videos" element={<VideoPage />} />
-            <Route path="memes" element={<MemesPage />} />
-            <Route path="memory" element={<MemoryManager />} />
-            <Route path="favorites" element={<FavoritesPage />} />
-            <Route path="history" element={<HistoryPage />} />
-            <Route path="companion" element={<Companion />} />
-            <Route path="counselors" element={<CandidateFindCounselors />} />
-            <Route path="book/:id" element={<CandidateBookAppointment />} />
-            <Route path="appointments" element={<CandidateAppointments />} />
-            <Route path="parents" element={<ParentLinkingPage />} />
-            <Route path="chats" element={<CandidateChats />} />
-            <Route path="notifications" element={<NotificationsPage />} />
-            <Route path="emergency" element={<EmergencyContacts />} />
-            <Route path="assessment" element={<AssessmentPage />} />
-            <Route path="permissions" element={<PermissionsPage />} />
-            <Route path="consultation/:id" element={<CandidateConsultationPage />} />
-            <Route path="search" element={<GlobalSearchPage />} />
-            <Route path="settings" element={<CandidateSettings />} />
-          </Route>
+            {/* Candidate Portal Routes */}
+            <Route path="/candidate" element={
+              <ProtectedCandidate><CandidateLayout /></ProtectedCandidate>
+            }>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<CandidateDashboard />} />
+              <Route path="entertainment" element={<EntertainmentHub />} />
+              <Route path="ai-chat" element={<AiChatPage />} />
+              <Route path="music" element={<MusicPage />} />
+              <Route path="videos" element={<VideoPage />} />
+              <Route path="memes" element={<MemesPage />} />
+              <Route path="memory" element={<MemoryManager />} />
+              <Route path="favorites" element={<FavoritesPage />} />
+              <Route path="history" element={<HistoryPage />} />
+              <Route path="companion" element={<Companion />} />
+              <Route path="counselors" element={<CandidateFindCounselors />} />
+              <Route path="book/:id" element={<CandidateBookAppointment />} />
+              <Route path="appointments" element={<CandidateAppointments />} />
+              <Route path="parents" element={<ParentLinkingPage />} />
+              <Route path="chats" element={<CandidateChats />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="emergency" element={<EmergencyContacts />} />
+              <Route path="assessment" element={<AssessmentPage />} />
+              <Route path="permissions" element={<PermissionsPage />} />
+              <Route path="consultation/:id" element={<CandidateConsultationPage />} />
+              <Route path="search" element={<GlobalSearchPage />} />
+              <Route path="settings" element={<CandidateSettings />} />
+            </Route>
 
-          {/* Redirect legacy /patient routes to /candidate */}
-          <Route path="/patient/*" element={<Navigate to="/candidate" replace />} />
+            {/* Redirect legacy /patient routes to /candidate */}
+            <Route path="/patient/*" element={<Navigate to="/candidate" replace />} />
 
-          {/* Parent Portal Routes */}
-          <Route path="/parent" element={
-            <ProtectedParent><ParentLayout /></ProtectedParent>
-          }>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<ParentDashboard />} />
-            <Route path="students" element={<ParentStudents />} />
-            <Route path="alerts" element={<ParentAlerts />} />
-            <Route path="counselors" element={<ParentCounselors />} />
-            <Route path="appointments" element={<ParentAppointments />} />
-            <Route path="settings" element={<ParentSettings />} />
-          </Route>
+            {/* Parent Portal Routes */}
+            <Route path="/parent" element={
+              <ProtectedParent><ParentLayout /></ProtectedParent>
+            }>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<ParentDashboard />} />
+              <Route path="students" element={<ParentStudents />} />
+              <Route path="alerts" element={<ParentAlerts />} />
+              <Route path="counselors" element={<ParentCounselors />} />
+              <Route path="appointments" element={<ParentAppointments />} />
+              <Route path="settings" element={<ParentSettings />} />
+            </Route>
 
-          {/* Counselor Portal Routes */}
-          <Route path="/counselor" element={
-            <ProtectedCounselor><CounselorLayout /></ProtectedCounselor>
-          }>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<CounselorDashboard />} />
-            <Route path="profile" element={<CounselorProfile />} />
-            <Route path="appointment-requests" element={<AppointmentRequests />} />
-            <Route path="appointments" element={<CounselorAppointments />} />
-            <Route path="patients" element={<CounselorCandidates />} />
-            <Route path="candidates" element={<CounselorCandidates />} />
-            <Route path="chats" element={<CounselorChats />} />
-            <Route path="notifications" element={<NotificationsPage />} />
-            <Route path="consultation/:id" element={<CounselorConsultationPage />} />
-            <Route path="availability" element={<CounselorAvailability />} />
-            <Route path="settings" element={<CounselorSettings />} />
-          </Route>
-        </Routes>
-      </MusicProvider>
-    </LanguageProvider>
+            {/* Counselor Portal Routes */}
+            <Route path="/counselor" element={
+              <ProtectedCounselor><CounselorLayout /></ProtectedCounselor>
+            }>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<CounselorDashboard />} />
+              <Route path="profile" element={<CounselorProfile />} />
+              <Route path="appointment-requests" element={<AppointmentRequests />} />
+              <Route path="appointments" element={<CounselorAppointments />} />
+              <Route path="patients" element={<CounselorCandidates />} />
+              <Route path="candidates" element={<CounselorCandidates />} />
+              <Route path="chats" element={<CounselorChats />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="consultation/:id" element={<CounselorConsultationPage />} />
+              <Route path="availability" element={<CounselorAvailability />} />
+              <Route path="settings" element={<CounselorSettings />} />
+            </Route>
+          </Routes>
+        </MusicProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

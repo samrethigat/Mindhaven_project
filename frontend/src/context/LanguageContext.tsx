@@ -9,12 +9,12 @@ export interface LanguageOption {
   name: string;
   nativeName: string;
   flag: string;
-  speechCode: string; // e.g. "ta-IN", "en-US", "hi-IN"
+  speechCode: string; // e.g. "en-US", "ta-IN", "hi-IN"
 }
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: "ta", name: "Tamil", nativeName: "தமிழ்", flag: "🇮🇳", speechCode: "ta-IN" },
   { code: "en", name: "English", nativeName: "English", flag: "🌐", speechCode: "en-US" },
+  { code: "ta", name: "Tamil", nativeName: "தமிழ்", flag: "🇮🇳", speechCode: "ta-IN" },
   { code: "hi", name: "Hindi", nativeName: "हिन्दी", flag: "🇮🇳", speechCode: "hi-IN" },
   { code: "te", name: "Telugu", nativeName: "తెలుగు", flag: "🇮🇳", speechCode: "te-IN" },
   { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ", flag: "🇮🇳", speechCode: "kn-IN" },
@@ -44,9 +44,18 @@ const LanguageContext = createContext<LanguageContextType | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const { user, setUser } = useAuth();
-  const [language, setLanguageState] = useState<string>("ta");
+  // Default language is English ("en")
+  const [language, setLanguageState] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem("preferredLanguage");
+      if (saved) return saved;
+    } catch {
+      // Ignore
+    }
+    return "en";
+  });
 
-  // Load language on boot: priority = user.preferredLanguage > localStorage > "ta"
+  // Load language on boot or user change: priority = user.preferredLanguage > localStorage > "en"
   useEffect(() => {
     if (user?.preferredLanguage) {
       setLanguageState(user.preferredLanguage);
@@ -55,6 +64,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       const stored = localStorage.getItem("preferredLanguage");
       if (stored) {
         setLanguageState(stored);
+      } else {
+        setLanguageState("en");
       }
     }
   }, [user?.preferredLanguage]);
@@ -79,12 +90,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
       if (notify) {
         const langObj = SUPPORTED_LANGUAGES.find((l) => l.code === cleanCode);
-        const name = langObj?.nativeName || cleanCode;
-        if (cleanCode === "ta") {
-          toast.success(`🌐 மொழி மாற்றப்பட்டது: ${name}`);
-        } else {
-          toast.success(`🌐 Language switched to: ${name}`);
-        }
+        const name = langObj?.name || cleanCode;
+        toast.success(`🌐 Language switched to: ${name}`);
       }
     },
     [user, setUser]

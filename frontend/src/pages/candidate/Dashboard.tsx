@@ -245,18 +245,18 @@ export function CandidateDashboard() {
       )}
 
       {/* 3. Daily Mood Check-In */}
-      <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm space-y-4">
+      <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4 transition-colors">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-slate-900 text-base">
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">
               {t("dash_mood_title")}
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {t("dash_mood_sub")}
             </p>
           </div>
           {moodLogged && (
-            <span className="badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+            <span className="badge bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
               ✓ {language === "ta" ? "பதிவு செய்யப்பட்டது" : "Logged"}
             </span>
           )}
@@ -267,10 +267,10 @@ export function CandidateDashboard() {
             <button
               key={m.labelEn}
               onClick={() => handleLogMood(m)}
-              className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border transition-all ${
+              className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border transition-all cursor-pointer ${
                 selectedMood === m.labelEn
                   ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
-                  : "bg-slate-50/70 border-slate-200/70 hover:bg-blue-50/60 text-slate-800"
+                  : "bg-slate-50 dark:bg-slate-800/60 border-slate-200/70 dark:border-slate-700 hover:bg-blue-50/60 dark:hover:bg-slate-700/60 text-slate-800 dark:text-slate-200"
               }`}
             >
               <span className="text-2xl mb-1">{m.emoji}</span>
@@ -341,88 +341,80 @@ export function CandidateDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link
           to="/candidate/ai-chat"
-          className="group p-5 rounded-3xl border border-slate-200/80 bg-white hover:shadow-xl hover:border-blue-300 transition-all flex flex-col justify-between"
+          className="group p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-xl hover:border-blue-400 dark:hover:border-blue-600 transition-all flex flex-col justify-between"
         >
           <div className="space-y-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
               <Sparkles className="w-6 h-6" />
             </div>
-            <h4 className="font-bold text-base text-slate-900 group-hover:text-blue-600 transition-colors">
+            <h4 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
               {t("nav_chat")}
             </h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              {language === "ta"
-                ? "ChatGPT போன்ற தமிழ் உரையாடல்கள் மற்றும் நேரடி குரல் உதவியாளர்."
-                : "ChatGPT-like conversational intelligence with multilingual speech recognition."}
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Conversational intelligence with multilingual speech recognition.
             </p>
           </div>
-          <span className="mt-4 text-xs font-bold text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <span className="mt-4 text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             {t("dash_chat_btn")} →
           </span>
         </Link>
 
         <Link
           to="/candidate/music"
-          className="group p-5 rounded-3xl border border-slate-200/80 bg-white hover:shadow-xl hover:border-indigo-300 transition-all flex flex-col justify-between"
+          className="group p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-xl hover:border-indigo-400 dark:hover:border-indigo-600 transition-all flex flex-col justify-between"
         >
           <div className="space-y-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
               <Music className="w-6 h-6" />
             </div>
-            <h4 className="font-bold text-base text-slate-900 group-hover:text-indigo-600 transition-colors">
+            <h4 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors">
               {t("nav_music")}
             </h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              {language === "ta"
-                ? "Spotify போன்ற மெலடி, கர்நாடகம், 90s மற்றும் புத்துணர்ச்சியூட்டும் பாடல்கள்."
-                : "Spotify-like streaming with melodies, classical carnatic, 90s, and latest hits."}
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Spotify streaming with ambient soundscapes, focus beats, and hits.
             </p>
           </div>
-          <span className="mt-4 text-xs font-bold text-indigo-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <span className="mt-4 text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             {t("dash_music_btn")} →
           </span>
         </Link>
 
         <Link
           to="/candidate/videos"
-          className="group p-5 rounded-3xl border border-slate-200/80 bg-white hover:shadow-xl hover:border-rose-300 transition-all flex flex-col justify-between"
+          className="group p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-xl hover:border-rose-400 dark:hover:border-rose-600 transition-all flex flex-col justify-between"
         >
           <div className="space-y-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 group-hover:scale-110 transition-transform">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
               <Film className="w-6 h-6" />
             </div>
-            <h4 className="font-bold text-base text-slate-900 group-hover:text-rose-600 transition-colors">
+            <h4 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors">
               {t("nav_videos")}
             </h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              {language === "ta"
-                ? "YouTube போன்ற தன்னம்பிக்கை உரைகள், கல்வி, கோடிங் மற்றும் நகைச்சுவைகள்."
-                : "YouTube-like library with motivation, coding tutorials, AI, and comedy."}
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Curated student wellness videos, mindfulness, and study motivation.
             </p>
           </div>
-          <span className="mt-4 text-xs font-bold text-rose-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <span className="mt-4 text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             {t("nav_videos")} →
           </span>
         </Link>
 
         <Link
           to="/candidate/memes"
-          className="group p-5 rounded-3xl border border-slate-200/80 bg-white hover:shadow-xl hover:border-amber-300 transition-all flex flex-col justify-between"
+          className="group p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-xl hover:border-amber-400 dark:hover:border-amber-600 transition-all flex flex-col justify-between"
         >
           <div className="space-y-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
               <Smile className="w-6 h-6" />
             </div>
-            <h4 className="font-bold text-base text-slate-900 group-hover:text-amber-600 transition-colors">
+            <h4 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-amber-600 transition-colors">
               {t("nav_memes")}
             </h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              {language === "ta"
-                ? "கல்லூரி வாழ்க்கை, நண்பர்கள் மற்றும் கோடிங் நகைச்சுவைகள்."
-                : "Relatable campus humor, friendship memes, and coding jokes."}
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Relatable campus humor, positive psychology memes, and laughs.
             </p>
           </div>
-          <span className="mt-4 text-xs font-bold text-amber-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <span className="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             {t("nav_memes")} →
           </span>
         </Link>
@@ -431,16 +423,16 @@ export function CandidateDashboard() {
       {/* 5. Music Spotlight & Recommended Videos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recommended Music */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm space-y-4">
+        <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Music className="w-5 h-5 text-indigo-600" />
-              <h3 className="font-bold text-slate-900 text-base">
-                {language === "ta" ? "🎵 பரிந்துரைக்கப்படும் பாடல்கள்" : "🎵 Recommended Music"}
+              <Music className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                🎵 Recommended Tracks
               </h3>
             </div>
-            <Link to="/candidate/music" className="text-xs font-bold text-blue-600 hover:underline">
-              {language === "ta" ? "அனைத்தும் →" : "View All →"}
+            <Link to="/candidate/music" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+              View All →
             </Link>
           </div>
 
@@ -449,16 +441,16 @@ export function CandidateDashboard() {
               <div
                 key={song.id}
                 onClick={() => playSong(song)}
-                className="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-blue-50/60 hover:border-blue-200 cursor-pointer transition-all group"
+                className="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 hover:bg-blue-50/60 dark:hover:bg-slate-800 hover:border-blue-200 dark:hover:border-slate-700 cursor-pointer transition-all group"
               >
                 <img src={song.coverUrl} alt={song.title} className="w-12 h-12 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
-                  <p className="font-bold text-xs text-slate-900 truncate group-hover:text-blue-700">
+                  <p className="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     {song.title}
                   </p>
-                  <p className="text-[11px] text-slate-500 truncate">{song.artist}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{song.artist}</p>
                 </div>
-                <button className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <button className="flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                   <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                 </button>
               </div>
@@ -467,16 +459,16 @@ export function CandidateDashboard() {
         </div>
 
         {/* Recommended Videos */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm space-y-4">
+        <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Film className="w-5 h-5 text-rose-600" />
-              <h3 className="font-bold text-slate-900 text-base">
-                {language === "ta" ? "🎬 பரிந்துரைக்கப்படும் வீடியோக்கள்" : "🎬 Recommended Videos"}
+              <Film className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+              <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                🎬 Recommended Videos
               </h3>
             </div>
-            <Link to="/candidate/videos" className="text-xs font-bold text-rose-600 hover:underline">
-              {language === "ta" ? "அனைத்தும் →" : "View All →"}
+            <Link to="/candidate/videos" className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline">
+              View All →
             </Link>
           </div>
 
@@ -485,16 +477,16 @@ export function CandidateDashboard() {
               <Link
                 key={vid.id}
                 to="/candidate/videos"
-                className="flex items-center gap-3 p-2.5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-rose-50/60 hover:border-rose-200 transition-all group"
+                className="flex items-center gap-3 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 hover:bg-rose-50/60 dark:hover:bg-slate-800 hover:border-rose-200 dark:hover:border-slate-700 transition-all group"
               >
                 <img src={vid.thumbnail} alt={vid.title} className="w-16 h-12 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
-                  <p className="font-bold text-xs text-slate-900 line-clamp-1 group-hover:text-rose-600">
+                  <p className="font-bold text-xs text-slate-900 dark:text-white line-clamp-1 group-hover:text-rose-600 dark:group-hover:text-rose-400">
                     {vid.title}
                   </p>
-                  <p className="text-[10px] text-slate-500 truncate">{vid.speaker} · {vid.duration}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{vid.speaker} · {vid.duration}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-rose-600 transition-colors" />
+                <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-rose-600 transition-colors" />
               </Link>
             ))}
           </div>
@@ -502,16 +494,16 @@ export function CandidateDashboard() {
       </div>
 
       {/* 6. Trending Memes Grid */}
-      <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm space-y-4">
+      <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4 transition-colors">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Smile className="w-5 h-5 text-amber-500" />
-            <h3 className="font-bold text-slate-900 text-base">
-              {language === "ta" ? "😂 டிரெண்டிங் மீம்ஸ் & சிரிப்பு" : "😂 Trending Memes"}
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">
+              😂 Trending Memes & Humor
             </h3>
           </div>
-          <Link to="/candidate/memes" className="text-xs font-bold text-amber-600 hover:underline">
-            {language === "ta" ? "அனைத்து மீம்களையும் பார் →" : "View All Memes →"}
+          <Link to="/candidate/memes" className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline">
+            View All Memes →
           </Link>
         </div>
 
@@ -520,10 +512,10 @@ export function CandidateDashboard() {
             <Link
               key={m.id}
               to="/candidate/memes"
-              className="group rounded-2xl border border-slate-100 bg-slate-50/40 p-2.5 hover:shadow-md hover:border-amber-200 transition-all space-y-2"
+              className="group rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-2.5 hover:shadow-md hover:border-amber-200 dark:hover:border-amber-700 transition-all space-y-2"
             >
               <img src={m.imageUrl} alt={m.title} className="aspect-square w-full object-cover rounded-xl" />
-              <p className="font-bold text-xs text-slate-900 truncate group-hover:text-amber-600">
+              <p className="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-amber-600 dark:group-hover:text-amber-400">
                 {m.title}
               </p>
             </Link>

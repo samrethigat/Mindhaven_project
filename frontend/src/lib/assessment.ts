@@ -44,11 +44,11 @@ export interface AssessmentResult {
 }
 
 export const RESPONSE_SCALE = [
-  { value: 1, label: "Never", tamilLabel: "ஒருபோதும் இல்லை", description: "Not at all in daily life" },
-  { value: 2, label: "Rarely", tamilLabel: "அரிதாக", description: "Only on rare occasions" },
-  { value: 3, label: "Sometimes", tamilLabel: "சில நேரங்களில்", description: "Occasionally or about half the time" },
-  { value: 4, label: "Often", tamilLabel: "அடிக்கடி", description: "Frequently in regular routine" },
-  { value: 5, label: "Almost Always", tamilLabel: "கிட்டத்தட்ட எப்போதும்", description: "Consistently almost every day" },
+  { value: 1, label: "Never", description: "Not at all in daily routine" },
+  { value: 2, label: "Rarely", description: "Only once in a while" },
+  { value: 3, label: "Sometimes", description: "About half the time" },
+  { value: 4, label: "Often", description: "Frequently in weekly routine" },
+  { value: 5, label: "Almost Always", description: "Consistently almost every day" },
 ];
 
 export const CATEGORIES = {
@@ -90,7 +90,7 @@ export const CATEGORIES = {
   },
   coping: {
     id: "coping",
-    title: "Coping, Resilience & Mindset",
+    title: "Coping, Resilience & Future Mindset",
     tamilTitle: "சவால்களை எதிர்கொள்ளும் திறன் & எதிர்கால நம்பிக்கை",
     icon: "Shield",
     color: "emerald",
@@ -160,22 +160,38 @@ export const ASSESSMENT_DISCLAIMER =
 
 export function getLevelBadgeClass(level: string): { bg: string; text: string; border: string } {
   if (level.includes("Strong") || level.includes("Healthy")) {
-    return { bg: "bg-emerald-50 dark:bg-emerald-950/60", text: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-800" };
+    return {
+      bg: "bg-emerald-50 dark:bg-emerald-950/70",
+      text: "text-emerald-800 dark:text-emerald-300",
+      border: "border-emerald-300 dark:border-emerald-800",
+    };
   }
   if (level.includes("Moderate") || level.includes("Attention")) {
-    return { bg: "bg-blue-50 dark:bg-blue-950/60", text: "text-blue-700 dark:text-blue-300", border: "border-blue-200 dark:border-blue-800" };
+    return {
+      bg: "bg-blue-50 dark:bg-blue-950/70",
+      text: "text-blue-800 dark:text-blue-300",
+      border: "border-blue-300 dark:border-blue-800",
+    };
   }
   if (level.includes("Improvement")) {
-    return { bg: "bg-amber-50 dark:bg-amber-950/60", text: "text-amber-700 dark:text-amber-300", border: "border-amber-200 dark:border-amber-800" };
+    return {
+      bg: "bg-amber-50 dark:bg-amber-950/70",
+      text: "text-amber-800 dark:text-amber-300",
+      border: "border-amber-300 dark:border-amber-800",
+    };
   }
-  return { bg: "bg-rose-50 dark:bg-rose-950/60", text: "text-rose-700 dark:text-rose-300", border: "border-rose-200 dark:border-rose-800" };
+  return {
+    bg: "bg-rose-50 dark:bg-rose-950/70",
+    text: "text-rose-800 dark:text-rose-300",
+    border: "border-rose-300 dark:border-rose-800",
+  };
 }
 
 export function getScoreBarColor(percentage: number): string {
-  if (percentage >= 80) return "bg-emerald-500";
-  if (percentage >= 60) return "bg-blue-500";
-  if (percentage >= 40) return "bg-amber-500";
-  return "bg-rose-500";
+  if (percentage >= 80) return "bg-emerald-600 dark:bg-emerald-500";
+  if (percentage >= 60) return "bg-blue-600 dark:bg-blue-500";
+  if (percentage >= 40) return "bg-amber-600 dark:bg-amber-500";
+  return "bg-rose-600 dark:bg-rose-500";
 }
 
 /** Local scoring helper for offline / instantaneous preview fallback */
@@ -235,4 +251,23 @@ export function scoreAssessmentLocally(answers: Record<string, number>): Assessm
     summary: `Your assessment reflects an overall well-being score of ${overallPercentage}% with a ${profile} mindset profile.`,
     completedAt: new Date().toISOString(),
   };
+}
+
+/**
+ * Generates polygon coordinates for 5-axis Radar Chart in SVG
+ */
+export function getRadarCoordinates(
+  values: number[], // [emotional, academic, selfConfidence, social, coping] 0-100
+  center: number = 100,
+  radius: number = 70
+): string {
+  const count = values.length;
+  const points = values.map((val, i) => {
+    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    const r = (Math.max(10, Math.min(100, val)) / 100) * radius;
+    const x = center + r * Math.cos(angle);
+    const y = center + r * Math.sin(angle);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  return points.join(" ");
 }

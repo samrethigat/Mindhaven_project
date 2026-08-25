@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -38,8 +39,8 @@ export default {
       },
       animation: {
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "float": "float 3s ease-in-out infinite",
-        "breathe": "breathe 8s ease-in-out infinite",
+        float: "float 3s ease-in-out infinite",
+        breathe: "breathe 8s ease-in-out infinite",
       },
       keyframes: {
         float: {
@@ -55,4 +56,3 @@ export default {
   },
   plugins: [],
 };
-
