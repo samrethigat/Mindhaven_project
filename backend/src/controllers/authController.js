@@ -37,6 +37,11 @@ export async function register(req, res) {
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   let role = req.body.role;
+  if (!role) {
+    if (req.originalUrl?.includes("counselor") || req.path?.includes("counselor")) role = "counselor";
+    else if (req.originalUrl?.includes("parent") || req.path?.includes("parent")) role = "parent";
+    else role = "candidate";
+  }
   if (role === "patient") role = "candidate";
   if (role !== "candidate" && role !== "counselor" && role !== "parent") {
     return res.status(400).json({ error: "Invalid role" });
