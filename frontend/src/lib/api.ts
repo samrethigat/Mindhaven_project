@@ -19,17 +19,21 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
+    // Only attempt refresh if this is a real 401 and not already retried
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
-      try {
-        const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
-        localStorage.setItem("accessToken", data.accessToken);
-        original.headers.Authorization = `Bearer ${data.accessToken}`;
-        return api(original);
-      } catch {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("user");
-        window.location.href = "/login/patient";
+      const currentToken = localStorage.getItem("accessToken");
+      if (currentToken && !currentToken.startsWith("token_") && !currentToken.startsWith("demo_")) {
+        try {
+          const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
+          localStorage.setItem("accessToken", data.accessToken);
+          original.headers.Authorization = `Bearer ${data.accessToken}`;
+          return api(original);
+        } catch {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("user");
+          window.location.href = "/login/candidate";
+        }
       }
     }
     return Promise.reject(error);
