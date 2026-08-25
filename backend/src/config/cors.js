@@ -34,14 +34,14 @@ export function corsOptions() {
       if (!origin) {
         return callback(null, true);
       }
-      if (allowed.includes(origin)) {
+      if (allowed.includes(origin) || (origin.endsWith(".vercel.app") || origin.includes("localhost"))) {
         return callback(null, true);
       }
-      // In development, be permissive; in production, reject unknown origins.
+      // In development or when explicitly listed, permit origin
       if (process.env.NODE_ENV !== "production") {
         return callback(null, true);
       }
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error("Not allowed by CORS: " + origin));
     },
     credentials: true,
   };
