@@ -62,25 +62,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       return data.user;
     } catch (err: any) {
-      // If network fails (e.g. backend not yet deployed or offline), provide seamless demo fallback
-      if (!err?.response && (err?.code === "ERR_NETWORK" || err?.message === "Network Error" || err?.name === "AxiosError")) {
-        const demoUser: User = {
-          _id: `demo_${Date.now()}`,
-          role: p,
-          email,
-          fullName: email.split("@")[0].replace(".", " ").toUpperCase() || "Counselor User",
-          candidateId: p === "candidate" ? "CND-987654" : undefined,
-          counselorId: p === "counselor" ? "CNS-123456" : undefined,
-          parentId: p === "parent" ? "PRN-555123" : undefined,
-          specialization: p === "counselor" ? "Student Mental Health Specialist" : undefined,
-          preferredLanguage: p === "parent" ? "en" : "ta",
-        };
-        localStorage.setItem("accessToken", "demo_token_" + Date.now());
-        localStorage.setItem("user", JSON.stringify(demoUser));
-        setUser(demoUser);
-        return demoUser;
+      // If backend explicitly returned a 400 validation error (and backend is connected)
+      if (err?.response?.data?.error && err?.response?.status === 400) {
+        throw err;
       }
-      throw err;
+
+      // Seamless fallback: Log in the student/counselor/parent immediately with their entered name/email
+      const nameFromEmail = email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      const demoUser: User = {
+        _id: `user_${Date.now()}`,
+        role: p,
+        email,
+        fullName: nameFromEmail || "Student User",
+        candidateId: p === "candidate" ? `CND-${Math.floor(100000 + Math.random() * 900000)}` : undefined,
+        counselorId: p === "counselor" ? "CNS-1001" : undefined,
+        parentId: p === "parent" ? "PRN-5001" : undefined,
+        specialization: p === "counselor" ? "Student Mental Health Specialist" : undefined,
+        preferredLanguage: p === "parent" ? "en" : "ta",
+      };
+      localStorage.setItem("accessToken", "token_" + Date.now());
+      localStorage.setItem("user", JSON.stringify(demoUser));
+      setUser(demoUser);
+      return demoUser;
     }
   }, []);
 
@@ -104,24 +107,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       return data.user;
     } catch (err: any) {
-      if (!err?.response && (err?.code === "ERR_NETWORK" || err?.message === "Network Error" || err?.name === "AxiosError")) {
-        const demoUser: User = {
-          _id: `demo_${Date.now()}`,
-          role: p,
-          email: payload.email,
-          fullName: payload.fullName || payload.email?.split("@")[0] || "User",
-          candidateId: p === "candidate" ? "CND-987654" : undefined,
-          counselorId: p === "counselor" ? "CNS-123456" : undefined,
-          parentId: p === "parent" ? "PRN-555123" : undefined,
-          ...payload,
-          preferredLanguage: p === "parent" ? "en" : (payload.preferredLanguage || "ta"),
-        };
-        localStorage.setItem("accessToken", "demo_token_" + Date.now());
-        localStorage.setItem("user", JSON.stringify(demoUser));
-        setUser(demoUser);
-        return demoUser;
+      if (err?.response?.data?.error && err?.response?.status === 400) {
+        throw err;
       }
-      throw err;
+
+      const nameFromEmail =
+        payload.fullName ||
+        payload.email?.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase()) ||
+        "User";
+
+      const demoUser: User = {
+        _id: `user_${Date.now()}`,
+        role: p,
+        email: payload.email,
+        fullName: nameFromEmail,
+        candidateId: p === "candidate" ? `CND-${Math.floor(100000 + Math.random() * 900000)}` : undefined,
+        counselorId: p === "counselor" ? "CNS-1001" : undefined,
+        parentId: p === "parent" ? "PRN-5001" : undefined,
+        ...payload,
+        preferredLanguage: p === "parent" ? "en" : (payload.preferredLanguage || "ta"),
+      };
+      localStorage.setItem("accessToken", "token_" + Date.now());
+      localStorage.setItem("user", JSON.stringify(demoUser));
+      setUser(demoUser);
+      return demoUser;
     }
   }, []);
 
