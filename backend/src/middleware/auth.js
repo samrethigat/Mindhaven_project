@@ -41,3 +41,23 @@ export function authorize(...roles) {
     next();
   };
 }
+
+export async function optionalAuth(req, res, next) {
+  try {
+    let token = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    }
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.userId);
+      if (user && user.isActive && !user.isDeleted) {
+        req.user = user;
+        req.userId = user._id.toString();
+        req.role = user.role;
+      }
+    }
+  } catch {}
+  next();
+}

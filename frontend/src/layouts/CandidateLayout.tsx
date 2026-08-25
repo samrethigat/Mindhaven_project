@@ -37,6 +37,7 @@ export function CandidateLayout() {
 
   const nav = [
     { to: "/candidate/dashboard", label: t("nav_home"), icon: <Home className="w-4 h-4" /> },
+    { to: "/candidate/entertainment", label: language === "ta" ? "பன்மொழி பொழுதுபோக்கு" : "Entertainment Hub", icon: <Sparkles className="w-4 h-4 text-purple-500" /> },
     { to: "/candidate/search", label: language === "ta" ? "பொதுத் தேடல்" : "Global Search", icon: <Search className="w-4 h-4 text-blue-500" /> },
     { to: "/candidate/ai-chat", label: t("nav_chat"), icon: <Sparkles className="w-4 h-4 text-blue-500" /> },
     { to: "/candidate/music", label: t("nav_music"), icon: <Music className="w-4 h-4 text-indigo-500" /> },

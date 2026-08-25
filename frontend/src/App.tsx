@@ -40,6 +40,7 @@ import { ParentLinkingPage } from "./pages/candidate/ParentLinkingPage";
 
 // AI Assistant & Media Portal Pages
 import { AiChatPage } from "./pages/ai/AiChatPage";
+import { EntertainmentHub } from "./pages/media/EntertainmentHub";
 import { MusicPage } from "./pages/media/MusicPage";
 import { VideoPage } from "./pages/media/VideoPage";
 import { MemesPage } from "./pages/media/MemesPage";
@@ -138,6 +139,7 @@ export default function App() {
           }>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<CandidateDashboard />} />
+            <Route path="entertainment" element={<EntertainmentHub />} />
             <Route path="ai-chat" element={<AiChatPage />} />
             <Route path="music" element={<MusicPage />} />
             <Route path="videos" element={<VideoPage />} />

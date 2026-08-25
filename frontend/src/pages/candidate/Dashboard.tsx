@@ -112,28 +112,17 @@ export function CandidateDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
 
   useEffect(() => {
-    // 1. Music Tracks
-    api.get("/music/recommendations")
+    // 1. Entertainment Recommendations (Music, Videos, Memes)
+    api.get("/entertainment/recommendations", { params: { language } })
       .then((res) => {
-        if (res.data.recommendations?.length) setRecentTracks(res.data.recommendations.slice(0, 4));
+        const data = res.data;
+        if (data?.music?.latest?.length) setRecentTracks(data.music.latest.slice(0, 4));
+        if (data?.videos?.trending?.length) setRecommendedVideos(data.videos.trending.slice(0, 3));
+        if (data?.memes?.trending?.length) setTrendingMemes(data.memes.trending.slice(0, 4));
       })
       .catch(() => {});
 
-    // 2. Videos
-    api.get("/video/recommendations")
-      .then((res) => {
-        if (res.data.recommendations?.length) setRecommendedVideos(res.data.recommendations.slice(0, 3));
-      })
-      .catch(() => {});
-
-    // 3. Memes
-    api.get("/memes/list")
-      .then((res) => {
-        if (res.data.memes?.length) setTrendingMemes(res.data.memes.slice(0, 4));
-      })
-      .catch(() => {});
-
-    // 4. Last Conversation
+    // 2. Last Conversation
     api.get("/ai/conversations")
       .then((res) => {
         const convs = res.data.conversations || [];
@@ -141,13 +130,13 @@ export function CandidateDashboard() {
       })
       .catch(() => {});
 
-    // 5. Appointments
+    // 3. Appointments
     api.get("/appointments/candidate")
       .then((res) => {
         setAppointments(Array.isArray(res.data) ? res.data : res.data.appointments || []);
       })
       .catch(() => {});
-  }, []);
+  }, [language]);
 
   async function handleLogMood(mood: typeof MOODS[0]) {
     setSelectedMood(mood.labelEn);
@@ -283,6 +272,30 @@ export function CandidateDashboard() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* 🌟 Spotlight: Multilingual Entertainment Hub */}
+      <div className="rounded-3xl bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-950 p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-purple-800/40">
+        <div className="space-y-1.5">
+          <span className="badge bg-purple-500/20 text-purple-300 border border-purple-400/30 text-[11px] font-bold py-0.5 px-2.5">
+            ✨ {language === "ta" ? "புதிய அம்சம்" : "New Feature"} • {currentLanguageObj.name}
+          </span>
+          <h3 className="text-xl font-black">
+            {language === "ta" ? "பன்மொழி பொழுதுபோக்கு அரங்கம்" : "Multilingual Entertainment Hub"}
+          </h3>
+          <p className="text-xs text-purple-100/80 max-w-xl">
+            {language === "ta"
+              ? "Spotify பாடல்கள், YouTube வீடியோக்கள் மற்றும் மீம்ஸ்கள் உங்கள் மொழியில் தானாக புதுப்பிக்கப்படுகின்றன."
+              : `Official Spotify chartbusters, YouTube videos, and regional memes dynamically tailored for ${currentLanguageObj.name}.`}
+          </p>
+        </div>
+        <Link
+          to="/candidate/entertainment"
+          className="flex items-center gap-2 rounded-2xl bg-purple-600 px-5 py-3 text-xs sm:text-sm font-extrabold text-white shadow-lg hover:bg-purple-500 hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+        >
+          <span>{language === "ta" ? "அரங்கிற்குள் செல்க" : "Explore Entertainment"}</span>
+          <span>→</span>
+        </Link>
       </div>
 
       {/* 4. Quick Feature Hub Grid */}

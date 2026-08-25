@@ -64,6 +64,7 @@ export function MusicPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [totalTracks, setTotalTracks] = useState(0);
+  const [activeSpotifyEmbed, setActiveSpotifyEmbed] = useState<string | null>(null);
 
   useEffect(() => {
     setPage(1);
@@ -483,6 +484,35 @@ export function MusicPage() {
           </div>
         )}
       </div>
+
+      {/* 🎧 SPOTIFY EMBED MODAL */}
+      {activeSpotifyEmbed && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-lg rounded-3xl bg-slate-950 border border-emerald-500/30 p-4 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span className="text-xs font-bold text-emerald-400 flex items-center gap-2">
+                <Disc className="w-4 h-4 text-emerald-400 animate-spin-slow" />
+                <span>Spotify Official Player</span>
+              </span>
+              <button
+                onClick={() => setActiveSpotifyEmbed(null)}
+                className="p-1.5 rounded-full bg-slate-800 text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <iframe
+              src={activeSpotifyEmbed}
+              width="100%"
+              height="352"
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="rounded-2xl"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

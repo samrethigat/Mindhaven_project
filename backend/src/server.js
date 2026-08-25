@@ -28,6 +28,7 @@ import videoRoutes from "./routes/videoRoutes.js";
 import memeRoutes from "./routes/memeRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import parentRoutes from "./routes/parentRoutes.js";
+import entertainmentRoutes from "./routes/entertainmentRoutes.js";
 
 const app = express();
 const HTTP_PORT = process.env.PORT || 5000;
@@ -50,6 +51,8 @@ app.get("/api/health", (req, res) => res.json({ status: "ok", time: new Date() }
 
 // Core API Routes with plural & singular aliases for robust interop
 app.use("/api/auth", authRoutes);
+app.use("/api/entertainment", entertainmentRoutes);
+app.use("/api/user", entertainmentRoutes);
 app.use("/api/ai", aiAssistantRoutes);
 app.use("/api/music", musicRoutes);
 app.use("/api/video", videoRoutes);
