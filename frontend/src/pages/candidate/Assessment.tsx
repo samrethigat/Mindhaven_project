@@ -324,12 +324,12 @@ export function AssessmentPage() {
           {/* 1. INTRO STAGE */}
           {stage === "intro" && (
             <div className="space-y-6">
-              <div className="card p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6 transition-colors">
+              <div className="card p-5 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6 transition-colors">
                 <div className="space-y-2">
-                  <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                  <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
                     Purpose of This Assessment
                   </h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     This confidential self-assessment evaluates 5 fundamental domains of student psychological health and mindset. It takes approximately 4–6 minutes to answer 40 reflective questions.
                   </p>
                 </div>
@@ -361,9 +361,9 @@ export function AssessmentPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    <span>40 Questions · 5-Point Response Scale · Confidential & Private</span>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium text-center sm:text-left">
+                    <span>40 Questions · 5-Point Scale · Confidential & Private</span>
                   </div>
 
                   <button
@@ -372,7 +372,7 @@ export function AssessmentPage() {
                       setCurrentIndex(0);
                       setStage("questions");
                     }}
-                    className="btn-primary text-sm px-6 py-3 shadow-md shadow-blue-500/20 flex items-center gap-2"
+                    className="btn-primary text-xs sm:text-sm px-6 py-3 min-h-[44px] shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 w-full sm:w-auto"
                   >
                     <span>Begin Assessment</span>
                     <ArrowRight className="w-4 h-4" />
@@ -384,10 +384,10 @@ export function AssessmentPage() {
 
           {/* 2. QUESTION STEPPER STAGE */}
           {stage === "questions" && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Stepper Header */}
-              <div className="card p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 transition-colors">
-                <div className="flex items-center justify-between text-xs">
+              <div className="card p-4 sm:p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 transition-colors">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-extrabold text-xs">
                       {currentCat.title}
@@ -415,19 +415,19 @@ export function AssessmentPage() {
               </div>
 
               {/* Question Card */}
-              <div className="card p-6 sm:p-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md space-y-6 transition-colors">
-                <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              <div className="card p-5 sm:p-8 lg:p-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md space-y-6 transition-colors">
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                     Question #{currentQ.id}
                   </span>
                   {/* High contrast Question text (Black in Light Mode, White in Dark Mode) */}
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug">
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white leading-snug">
                     {currentQ.text}
                   </h3>
                 </div>
 
                 {/* 5 Response Scale Options */}
-                <div className="space-y-3 pt-2">
+                <div className="space-y-2.5 sm:space-y-3 pt-1">
                   {RESPONSE_SCALE.map((opt) => {
                     const isSelected = answers[`q${currentQ.id}`] === opt.value;
                     return (
@@ -435,16 +435,16 @@ export function AssessmentPage() {
                         key={opt.value}
                         type="button"
                         onClick={() => handleSelectOption(opt.value)}
-                        className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                        className={`w-full min-h-[52px] p-3.5 sm:p-4 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer active:scale-[0.99] ${
                           isSelected
                             ? "bg-blue-50 dark:bg-blue-950/70 border-blue-600 dark:border-blue-500 ring-2 ring-blue-500/20 shadow-sm"
                             : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500/60 hover:bg-slate-50 dark:hover:bg-slate-800/40"
                         }`}
                       >
-                        <div className="flex items-center gap-3.5">
+                        <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
                           {/* Radio Indicator (○ unselected / ● selected) */}
                           <div
-                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center font-bold text-xs transition-colors ${
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center font-bold text-xs transition-colors flex-shrink-0 ${
                               isSelected
                                 ? "border-blue-600 bg-blue-600 text-white"
                                 : "border-slate-300 dark:border-slate-600 bg-transparent text-transparent"
@@ -453,21 +453,21 @@ export function AssessmentPage() {
                             {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                           </div>
 
-                          <div>
+                          <div className="min-w-0">
                             {/* High Contrast Option Label */}
-                            <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-slate-100 block">
+                            <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-slate-100 block truncate">
                               {opt.label}
                             </span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 block line-clamp-1 sm:line-clamp-none">
                               {opt.description}
                             </span>
                           </div>
                         </div>
 
                         {isSelected && (
-                          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 flex-shrink-0 ml-2">
                             <Check className="w-4 h-4" />
-                            <span>Selected</span>
+                            <span className="hidden sm:inline">Selected</span>
                           </span>
                         )}
                       </button>
@@ -476,17 +476,17 @@ export function AssessmentPage() {
                 </div>
 
                 {/* Navigation Controls */}
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800 gap-3">
+                <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800 gap-3">
                   <button
                     onClick={handlePrev}
                     disabled={currentIndex === 0}
-                    className="btn-outline text-xs px-5 py-2.5 flex items-center gap-1.5"
+                    className="btn-outline text-xs px-5 py-3 sm:py-2.5 min-h-[44px] flex items-center justify-center gap-1.5 w-full sm:w-auto"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Previous</span>
                   </button>
 
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-bold text-center">
                     {answeredCount} of 40 answered
                   </span>
 
@@ -494,7 +494,7 @@ export function AssessmentPage() {
                     <button
                       onClick={handleNext}
                       disabled={!isCurrentAnswered}
-                      className="btn-primary text-xs px-5 py-2.5 flex items-center gap-1.5"
+                      className="btn-primary text-xs px-5 py-3 sm:py-2.5 min-h-[44px] flex items-center justify-center gap-1.5 w-full sm:w-auto"
                     >
                       <span>Next</span>
                       <ChevronRight className="w-4 h-4" />
@@ -503,7 +503,7 @@ export function AssessmentPage() {
                     <button
                       onClick={() => setShowConfirmModal(true)}
                       disabled={!isAllAnswered}
-                      className="btn-primary text-xs px-6 py-2.5 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-500/20"
+                      className="btn-primary text-xs px-6 py-3 sm:py-2.5 min-h-[44px] flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-500/20 w-full sm:w-auto"
                     >
                       <span>Submit Assessment</span>
                       <Send className="w-3.5 h-3.5" />
@@ -512,12 +512,17 @@ export function AssessmentPage() {
                 </div>
               </div>
 
-              {/* Jump-to-Question Matrix */}
-              <div className="card p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 transition-colors">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block">
-                  Question Navigation Grid (1–40):
-                </span>
-                <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-20 gap-1.5">
+              {/* Jump-to-Question Matrix (Fluid wrap for mobile & desktop) */}
+              <div className="card p-4 sm:p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                    Question Navigation Matrix (1–40):
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-medium">
+                    Tap to jump
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center sm:justify-start">
                   {ASSESSMENT_QUESTIONS.map((q, idx) => {
                     const isAnswered = answers[`q${q.id}`] !== undefined;
                     const isCurrent = currentIndex === idx;
@@ -525,7 +530,7 @@ export function AssessmentPage() {
                       <button
                         key={q.id}
                         onClick={() => setCurrentIndex(idx)}
-                        className={`w-7 h-7 rounded-lg text-xs font-bold transition-all flex items-center justify-center ${
+                        className={`w-8 h-8 sm:w-7 sm:h-7 rounded-lg text-xs font-bold transition-all flex items-center justify-center cursor-pointer ${
                           isCurrent
                             ? "bg-blue-600 text-white ring-2 ring-blue-400 scale-105"
                             : isAnswered
@@ -547,14 +552,14 @@ export function AssessmentPage() {
           {stage === "result" && result && (
             <div className="space-y-6">
               {/* Header: Your Assessment Results */}
-              <div className="card p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md space-y-6 transition-colors">
+              <div className="card p-5 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md space-y-6 transition-colors">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="space-y-2 text-center md:text-left">
                     <span className="badge bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-extrabold px-3 py-1">
                       Mindset Profile: {result.mindsetProfile}
                     </span>
 
-                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">
                       Your Assessment Results
                     </h2>
 
@@ -565,7 +570,7 @@ export function AssessmentPage() {
                   </div>
 
                   {/* Circular / Radial Overall Score */}
-                  <div className="flex flex-col items-center justify-center p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-inner flex-shrink-0 w-48 text-center">
+                  <div className="flex flex-col items-center justify-center p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-inner flex-shrink-0 w-full sm:w-48 text-center">
                     <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Overall Well-Being
                     </span>
@@ -588,7 +593,7 @@ export function AssessmentPage() {
                     <span>Domain Balance Radar</span>
                   </h3>
 
-                  <div className="relative w-52 h-52 flex items-center justify-center">
+                  <div className="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center">
                     <svg viewBox="0 0 200 200" className="w-full h-full">
                       {/* Background web circles */}
                       <circle cx="100" cy="100" r="70" fill="none" stroke={isDark ? "#334155" : "#e2e8f0"} strokeWidth="1" strokeDasharray="3,3" />
@@ -681,7 +686,7 @@ export function AssessmentPage() {
               {/* Strengths & Areas to Focus On */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Strengths */}
-                <div className="card p-6 bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/60 shadow-sm space-y-3">
+                <div className="card p-5 sm:p-6 bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/60 shadow-sm space-y-3">
                   <h4 className="font-extrabold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span>Your Strengths</span>
@@ -697,7 +702,7 @@ export function AssessmentPage() {
                 </div>
 
                 {/* Areas to Focus On */}
-                <div className="card p-6 bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/60 shadow-sm space-y-3">
+                <div className="card p-5 sm:p-6 bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/60 shadow-sm space-y-3">
                   <h4 className="font-extrabold text-sm text-amber-800 dark:text-amber-300 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                     <span>Areas to Mindfully Focus On</span>
@@ -714,8 +719,8 @@ export function AssessmentPage() {
               </div>
 
               {/* Actionable Practical Suggestions */}
-              <div className="card p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-                <h4 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="card p-5 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <h4 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span>Personalized Actionable Suggestions</span>
                 </h4>
@@ -736,15 +741,15 @@ export function AssessmentPage() {
               </div>
 
               {/* Next Steps & Support Links */}
-              <div className="card p-6 bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-4">
+              <div className="card p-5 sm:p-6 bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-4">
                 <h4 className="font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Recommended Student Resources
                 </h4>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
                   <Link
                     to="/candidate/music"
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-white hover:border-emerald-500 transition-all shadow-sm"
+                    className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-white hover:border-emerald-500 transition-all shadow-sm"
                   >
                     <Music className="w-4 h-4 text-emerald-500" />
                     <span>Listen to Relaxing Music</span>
@@ -752,7 +757,7 @@ export function AssessmentPage() {
 
                   <Link
                     to="/candidate/ai-chat"
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-white hover:border-blue-500 transition-all shadow-sm"
+                    className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-white hover:border-blue-500 transition-all shadow-sm"
                   >
                     <MessageSquare className="w-4 h-4 text-blue-500" />
                     <span>Talk with Mira AI Assistant</span>
@@ -760,20 +765,20 @@ export function AssessmentPage() {
 
                   <Link
                     to="/candidate/counselors"
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-white hover:border-teal-500 transition-all shadow-sm"
+                    className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-white hover:border-teal-500 transition-all shadow-sm"
                   >
                     <UserCheck className="w-4 h-4 text-teal-500" />
                     <span>Book a Counselor Session</span>
                   </Link>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 text-xs text-slate-400">
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between border-t border-slate-200 dark:border-slate-800 text-xs text-slate-400 gap-2">
                   <span>
                     Completed on {new Date(result.completedAt || result.createdAt || Date.now()).toLocaleString()}
                   </span>
                   <button
                     onClick={handleRetake}
-                    className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1 cursor-pointer py-1"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Retake Assessment</span>
@@ -787,8 +792,8 @@ export function AssessmentPage() {
 
       {/* ⚠️ Confirmation Modal Before Final Submission */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
-          <div className="card p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full space-y-6 text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="card p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full my-auto space-y-6 text-center">
             <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-sm">
               <CheckCircle2 className="w-7 h-7" />
             </div>
@@ -808,12 +813,12 @@ export function AssessmentPage() {
               <p>✓ 100% Private to your student account</p>
             </div>
 
-            <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowConfirmModal(false)}
                 disabled={submitting}
-                className="btn-outline text-xs px-5 py-2.5"
+                className="btn-outline text-xs px-5 py-3 min-h-[44px] w-full sm:w-auto"
               >
                 Cancel
               </button>
@@ -821,7 +826,7 @@ export function AssessmentPage() {
                 type="button"
                 onClick={handleConfirmSubmit}
                 disabled={submitting}
-                className="btn-primary text-xs px-6 py-2.5 flex items-center gap-2"
+                className="btn-primary text-xs px-6 py-3 min-h-[44px] flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 {submitting ? (
                   <span>Evaluating...</span>

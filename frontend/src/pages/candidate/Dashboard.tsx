@@ -283,9 +283,9 @@ export function CandidateDashboard() {
       </div>
 
       {/* 🌟 Spotlight: Psychology & Mindset Assessment (40 Questions) */}
-      <div className="rounded-3xl bg-gradient-to-r from-teal-900 via-emerald-950 to-slate-950 p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-teal-800/40">
+      <div className="rounded-3xl bg-gradient-to-r from-teal-900 via-emerald-950 to-slate-950 p-5 sm:p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-teal-800/40">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="badge bg-teal-500/20 text-teal-300 border border-teal-400/30 text-[11px] font-bold py-0.5 px-2.5">
               🧠 {language === "ta" ? "உளவியல் ஆய்வு" : "Psychological Well-Being Tool"}
             </span>
@@ -295,10 +295,10 @@ export function CandidateDashboard() {
               </span>
             )}
           </div>
-          <h3 className="text-xl font-black">
+          <h3 className="text-lg sm:text-xl font-black">
             {language === "ta" ? "உளவியல் மற்றும் மனநிலை சுய மதிப்பீடு (40 கேள்விகள்)" : "Psychology & Mindset Assessment (40 Questions)"}
           </h3>
-          <p className="text-xs text-teal-100/80 max-w-xl">
+          <p className="text-xs text-teal-100/80 max-w-xl leading-relaxed">
             {language === "ta"
               ? "உங்கள் உணர்ச்சி சமநிலை, கல்வி அழுத்தம், சுயநம்பிக்கை மற்றும் சவால்களை சமாளிக்கும் திறனை அறிய 40 கேள்விகள் கொண்ட ஆய்வு."
               : "Scientifically structured 40-question screening to evaluate emotional balance, academic stress, self-confidence, and resilience."}
@@ -306,7 +306,7 @@ export function CandidateDashboard() {
         </div>
         <Link
           to="/candidate/assessment"
-          className="flex items-center gap-2 rounded-2xl bg-teal-600 px-5 py-3 text-xs sm:text-sm font-extrabold text-white shadow-lg hover:bg-teal-500 hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-teal-600 px-5 py-3 min-h-[44px] text-xs sm:text-sm font-extrabold text-white shadow-lg hover:bg-teal-500 hover:scale-105 active:scale-95 transition-all w-full md:w-auto flex-shrink-0"
         >
           <span>{latestAssessment ? (language === "ta" ? "முடிவுகளைக் காண்க" : "View Results & Retake") : (language === "ta" ? "மதிப்பீட்டைத் தொடங்குக" : "Start 40-Q Assessment")}</span>
           <span>→</span>
@@ -314,15 +314,15 @@ export function CandidateDashboard() {
       </div>
 
       {/* 🌟 Spotlight: Multilingual Entertainment Hub */}
-      <div className="rounded-3xl bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-950 p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-purple-800/40">
+      <div className="rounded-3xl bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-950 p-5 sm:p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-purple-800/40">
         <div className="space-y-1.5">
           <span className="badge bg-purple-500/20 text-purple-300 border border-purple-400/30 text-[11px] font-bold py-0.5 px-2.5">
             ✨ {language === "ta" ? "புதிய அம்சம்" : "New Feature"} • {currentLanguageObj.name}
           </span>
-          <h3 className="text-xl font-black">
+          <h3 className="text-lg sm:text-xl font-black">
             {language === "ta" ? "பன்மொழி பொழுதுபோக்கு அரங்கம்" : "Multilingual Entertainment Hub"}
           </h3>
-          <p className="text-xs text-purple-100/80 max-w-xl">
+          <p className="text-xs text-purple-100/80 max-w-xl leading-relaxed">
             {language === "ta"
               ? "Spotify பாடல்கள், YouTube வீடியோக்கள் மற்றும் மீம்ஸ்கள் உங்கள் மொழியில் தானாக புதுப்பிக்கப்படுகின்றன."
               : `Official Spotify chartbusters, YouTube videos, and regional memes dynamically tailored for ${currentLanguageObj.name}.`}
@@ -330,7 +330,7 @@ export function CandidateDashboard() {
         </div>
         <Link
           to="/candidate/entertainment"
-          className="flex items-center gap-2 rounded-2xl bg-purple-600 px-5 py-3 text-xs sm:text-sm font-extrabold text-white shadow-lg hover:bg-purple-500 hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-purple-600 px-5 py-3 min-h-[44px] text-xs sm:text-sm font-extrabold text-white shadow-lg hover:bg-purple-500 hover:scale-105 active:scale-95 transition-all w-full md:w-auto flex-shrink-0"
         >
           <span>{language === "ta" ? "அரங்கிற்குள் செல்க" : "Explore Entertainment"}</span>
           <span>→</span>

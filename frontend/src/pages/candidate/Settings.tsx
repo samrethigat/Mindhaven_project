@@ -60,8 +60,8 @@ export function CandidateSettings() {
   return (
     <div className="mx-auto max-w-3xl space-y-6 pb-24">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-900">{t("nav_settings")}</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">{t("nav_settings")}</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {language === "ta"
             ? "உங்கள் சுயவிவரம், மொழி தேர்வு மற்றும் கணக்கு அமைப்புகளை நிர்வகியுங்கள்"
             : "Manage your profile, preferred language, and account security"}
@@ -69,18 +69,18 @@ export function CandidateSettings() {
       </div>
 
       {/* 1. Language Preference Section */}
-      <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50/70 via-indigo-50/70 to-purple-50/70 p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="rounded-3xl border border-blue-200 dark:border-blue-900/60 bg-gradient-to-r from-blue-50/70 via-indigo-50/70 to-purple-50/70 dark:from-blue-950/40 dark:via-indigo-950/40 dark:to-slate-900 p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
               <Globe className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-slate-900 text-base">{t("language_title")}</h3>
-              <p className="text-xs text-slate-600 mt-0.5">{t("language_sub")}</p>
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t("language_title")}</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{t("language_sub")}</p>
             </div>
           </div>
-          <span className="badge bg-blue-100 text-blue-800 text-xs font-bold font-mono">
+          <span className="badge bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-xs font-bold font-mono self-start sm:self-auto">
             {currentLanguageObj.flag} {currentLanguageObj.nativeName}
           </span>
         </div>
@@ -94,17 +94,17 @@ export function CandidateSettings() {
                 key={lang.code}
                 type="button"
                 onClick={() => setLanguage(lang.code)}
-                className={`flex items-center justify-between p-3 rounded-2xl border text-xs font-bold transition-all ${
+                className={`flex items-center justify-between p-3 rounded-2xl border text-xs font-bold transition-all min-h-[44px] cursor-pointer ${
                   isSelected
                     ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
-                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 hover:border-slate-300"
                 }`}
               >
                 <div className="flex items-center gap-2 truncate">
                   <span className="text-base">{lang.flag}</span>
                   <div className="text-left truncate">
                     <p className="truncate">{lang.nativeName}</p>
-                    <p className={`text-[10px] ${isSelected ? "text-blue-200" : "text-slate-400"}`}>
+                    <p className={`text-[10px] ${isSelected ? "text-blue-200" : "text-slate-400 dark:text-slate-400"}`}>
                       {lang.name}
                     </p>
                   </div>
@@ -117,9 +117,9 @@ export function CandidateSettings() {
       </div>
 
       {/* 2. User Profile Card */}
-      <div className="card p-6 flex items-center justify-between gap-4">
+      <div className="card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors">
         <div className="flex items-center gap-3">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-100 text-2xl font-bold text-teal-700 overflow-hidden shadow-sm">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-100 dark:bg-teal-950/70 text-2xl font-bold text-teal-700 dark:text-teal-300 overflow-hidden shadow-sm flex-shrink-0">
             {user?.photo ? (
               <img src={user.photo} alt={user.fullName} className="h-full w-full object-cover" />
             ) : (
@@ -127,24 +127,24 @@ export function CandidateSettings() {
             )}
           </div>
           <div>
-            <p className="text-lg font-bold text-slate-900">{user?.fullName}</p>
-            <p className="text-xs text-slate-500">{user?.email}</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-white">{user?.fullName || "Student"}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{user?.email}</p>
             {user?.candidateId && (
-              <span className="inline-block mt-1 badge bg-teal-50 text-teal-700 text-xs font-mono font-bold">
+              <span className="inline-block mt-1 badge bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-xs font-mono font-bold">
                 ID: {user.candidateId}
               </span>
             )}
           </div>
         </div>
-        <button onClick={logout} className="btn-danger text-xs">
+        <button onClick={logout} className="btn-danger text-xs min-h-[44px] w-full sm:w-auto">
           {t("nav_logout")}
         </button>
       </div>
 
       {/* 3. Edit Profile Form */}
-      <form onSubmit={save} className="card space-y-4 p-6">
-        <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-          <UserIcon className="w-4 h-4 text-teal-600" />
+      <form onSubmit={save} className="card space-y-4 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <UserIcon className="w-4 h-4 text-teal-600 dark:text-teal-400" />
           <span>{language === "ta" ? "சுயவிவரத்தை திருத்து" : "Edit Profile"}</span>
         </h3>
         <div>
@@ -179,7 +179,7 @@ export function CandidateSettings() {
             <input name="state" className="input text-sm" value={form.state} onChange={update} />
           </div>
         </div>
-        <button type="submit" disabled={saving} className="btn-primary bg-teal-600 hover:bg-teal-700 border-none text-xs">
+        <button type="submit" disabled={saving} className="btn-primary bg-teal-600 hover:bg-teal-700 border-none text-xs min-h-[44px] w-full sm:w-auto">
           {saving
             ? language === "ta" ? "சேமிக்கப்படுகிறது..." : "Saving..."
             : language === "ta" ? "சுயவிவரத்தை சேமி" : "Save Profile Changes"}
@@ -187,9 +187,9 @@ export function CandidateSettings() {
       </form>
 
       {/* 4. Security & Password */}
-      <form onSubmit={changePassword} className="card space-y-4 p-6">
-        <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-          <Shield className="w-4 h-4 text-slate-600" />
+      <form onSubmit={changePassword} className="card space-y-4 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Shield className="w-4 h-4 text-slate-600 dark:text-slate-400" />
           <span>{language === "ta" ? "கடவுச்சொல் மாற்றம்" : "Security & Password"}</span>
         </h3>
         <div>
@@ -200,7 +200,7 @@ export function CandidateSettings() {
           <label className="label">{language === "ta" ? "புதிய கடவுச்சொல்" : "New Password"}</label>
           <input type="password" className="input text-sm" value={passForm.newPassword} onChange={(e) => setPassForm({ ...passForm, newPassword: e.target.value })} required minLength={6} />
         </div>
-        <button type="submit" disabled={changingPass} className="btn-outline text-xs">
+        <button type="submit" disabled={changingPass} className="btn-outline text-xs min-h-[44px] w-full sm:w-auto">
           {changingPass
             ? language === "ta" ? "மாற்றப்படுகிறது..." : "Updating..."
             : language === "ta" ? "கடவுச்சொல்லை மாற்று" : "Update Password"}
