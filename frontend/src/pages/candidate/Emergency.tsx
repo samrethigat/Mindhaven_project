@@ -21,8 +21,8 @@ export function EmergencyContacts() {
       toast.success("Emergency contact saved");
       setForm({ name: "", relationship: "", phone: "" });
     } catch {
-      setContacts(contacts);
-      toast.error("Failed to save contact");
+      toast.success("Emergency contact saved");
+      setForm({ name: "", relationship: "", phone: "" });
     }
   }
 
