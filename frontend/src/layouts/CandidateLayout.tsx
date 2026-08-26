@@ -14,8 +14,6 @@ import {
   Film,
   Smile,
   Search,
-  Heart,
-  Clock,
   Brain,
   UserCheck,
   Calendar,
