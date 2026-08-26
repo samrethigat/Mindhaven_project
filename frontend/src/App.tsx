@@ -46,8 +46,6 @@ import { MusicPage } from "./pages/media/MusicPage";
 import { VideoPage } from "./pages/media/VideoPage";
 import { MemesPage } from "./pages/media/MemesPage";
 import { MemoryManager } from "./pages/candidate/MemoryManager";
-import { FavoritesPage } from "./pages/media/FavoritesPage";
-import { HistoryPage } from "./pages/media/HistoryPage";
 
 import { NotificationsPage } from "./pages/Notifications";
 
