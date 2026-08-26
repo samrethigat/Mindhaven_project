@@ -47,8 +47,6 @@ export function CandidateLayout() {
     { to: "/candidate/music", label: t("nav_music"), icon: <Music className="w-4 h-4 text-indigo-500" /> },
     { to: "/candidate/videos", label: t("nav_videos"), icon: <Film className="w-4 h-4 text-rose-500" /> },
     { to: "/candidate/memes", label: t("nav_memes"), icon: <Smile className="w-4 h-4 text-amber-500" /> },
-    { to: "/candidate/favorites", label: t("nav_favorites"), icon: <Heart className="w-4 h-4 text-rose-500" /> },
-    { to: "/candidate/history", label: t("nav_history"), icon: <Clock className="w-4 h-4 text-sky-500" /> },
     { to: "/candidate/memory", label: t("nav_memory"), icon: <Brain className="w-4 h-4 text-purple-500" /> },
     { to: "/candidate/counselors", label: t("nav_counselors"), icon: <UserCheck className="w-4 h-4 text-teal-500" /> },
     { to: "/candidate/appointments", label: t("nav_appointments"), icon: <Calendar className="w-4 h-4 text-sky-500" /> },

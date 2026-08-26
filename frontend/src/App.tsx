@@ -147,8 +147,8 @@ export default function App() {
               <Route path="videos" element={<VideoPage />} />
               <Route path="memes" element={<MemesPage />} />
               <Route path="memory" element={<MemoryManager />} />
-              <Route path="favorites" element={<FavoritesPage />} />
-              <Route path="history" element={<HistoryPage />} />
+              <Route path="favorites" element={<Navigate to="/candidate/dashboard" replace />} />
+              <Route path="history" element={<Navigate to="/candidate/dashboard" replace />} />
               <Route path="companion" element={<Companion />} />
               <Route path="counselors" element={<CandidateFindCounselors />} />
               <Route path="book/:id" element={<CandidateBookAppointment />} />
