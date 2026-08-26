@@ -25,6 +25,9 @@ router.use(protect);
 router.post("/", bookAppointment);
 router.get("/candidate", getPatientAppointments);
 router.get("/patient", getPatientAppointments);
+router.get("/my", getPatientAppointments);
+router.get("/my-appointments", getPatientAppointments);
+router.get("/mine", getPatientAppointments);
 
 // counselor
 router.get("/counselor", getCounselorAppointments);

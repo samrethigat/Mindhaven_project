@@ -334,7 +334,7 @@ export async function getTracks(req, res) {
         limit: Number(limit),
       });
       if (spotifyRes && spotifyRes.tracks.length > 0) {
-        const favorites = await MediaFavorite.find({ user: req.user._id, mediaType: "music" });
+        const favorites = req.user?._id ? await MediaFavorite.find({ user: req.user._id, mediaType: "music" }) : [];
         const favSet = new Set(favorites.map((f) => f.mediaId));
         return res.json({
           tracks: spotifyRes.tracks.map((t) => ({ ...t, isFavorite: favSet.has(t.id) })),
@@ -371,10 +371,10 @@ export async function getTracks(req, res) {
     const paginated = tracks.slice(startIndex, startIndex + Number(limit));
 
     // Check user favorites
-    const favorites = await MediaFavorite.find({
+    const favorites = req.user?._id ? await MediaFavorite.find({
       user: req.user._id,
       mediaType: "music",
-    });
+    }) : [];
     const favSet = new Set(favorites.map((f) => f.mediaId));
 
     const enriched = paginated.map((t) => ({

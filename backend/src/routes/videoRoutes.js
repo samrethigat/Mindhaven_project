@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { protect } from "../middleware/auth.js";
+import { protect, optionalAuth } from "../middleware/auth.js";
 import {
   getVideos,
   getVideoRecommendations,
@@ -13,15 +13,17 @@ import {
 
 const router = Router();
 
-router.use(protect);
+// Public / optional auth catalogue routes
+router.get("/", optionalAuth, getVideos);
+router.get("/list", optionalAuth, getVideos);
+router.get("/recommendations", optionalAuth, getVideoRecommendations);
 
-router.get("/list", getVideos);
-router.get("/recommendations", getVideoRecommendations);
-router.post("/history", recordVideoHistory);
-router.get("/history", getVideoHistory);
-router.delete("/history", clearVideoHistory);
-router.delete("/history/:id", deleteVideoHistoryItem);
-router.post("/favorites", toggleVideoFavorite);
-router.get("/favorites", getVideoFavorites);
+// Protected user history and favorites
+router.post("/history", protect, recordVideoHistory);
+router.get("/history", protect, getVideoHistory);
+router.delete("/history", protect, clearVideoHistory);
+router.delete("/history/:id", protect, deleteVideoHistoryItem);
+router.post("/favorites", protect, toggleVideoFavorite);
+router.get("/favorites", protect, getVideoFavorites);
 
 export default router;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { protect } from "../middleware/auth.js";
+import { protect, optionalAuth } from "../middleware/auth.js";
 import {
   getMemes,
   toggleMemeLike,
@@ -8,10 +8,9 @@ import {
 
 const router = Router();
 
-router.use(protect);
-
-router.get("/list", getMemes);
-router.post("/like", toggleMemeLike);
-router.get("/favorites", getFavoriteMemes);
+router.get("/", optionalAuth, getMemes);
+router.get("/list", optionalAuth, getMemes);
+router.post("/like", protect, toggleMemeLike);
+router.get("/favorites", protect, getFavoriteMemes);
 
 export default router;

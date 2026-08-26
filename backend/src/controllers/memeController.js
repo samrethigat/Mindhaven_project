@@ -192,10 +192,10 @@ export async function getMemes(req, res) {
     const startIndex = (Number(page) - 1) * Number(limit);
     const paginated = list.slice(startIndex, startIndex + Number(limit));
 
-    const favorites = await MediaFavorite.find({
+    const favorites = req.user?._id ? await MediaFavorite.find({
       user: req.user._id,
       mediaType: "meme",
-    });
+    }) : [];
     const favSet = new Set(favorites.map((f) => f.mediaId));
 
     const enriched = paginated.map((m) => ({

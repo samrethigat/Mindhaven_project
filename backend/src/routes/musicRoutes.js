@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { protect } from "../middleware/auth.js";
+import { protect, optionalAuth } from "../middleware/auth.js";
 import {
   getTracks,
   getArtists,
@@ -18,20 +18,21 @@ import {
 
 const router = Router();
 
-router.use(protect);
+// Public / optional auth catalogue routes
+router.get("/tracks", optionalAuth, getTracks);
+router.get("/artists", optionalAuth, getArtists);
+router.get("/artists/:id", optionalAuth, getArtistDetails);
+router.get("/recommendations", optionalAuth, getRecommendations);
+router.get("/playlists", optionalAuth, getPlaylists);
 
-router.get("/tracks", getTracks);
-router.get("/artists", getArtists);
-router.get("/artists/:id", getArtistDetails);
-router.get("/recommendations", getRecommendations);
-router.post("/history", recordMusicHistory);
-router.get("/history", getMusicHistory);
-router.delete("/history", clearMusicHistory);
-router.delete("/history/:id", deleteMusicHistoryItem);
-router.post("/favorites", toggleFavorite);
-router.get("/favorites", getFavorites);
-router.get("/playlists", getPlaylists);
-router.post("/playlists", createPlaylist);
-router.post("/playlists/:id/add", addTrackToPlaylist);
+// Protected user-specific history and playlist actions
+router.post("/history", protect, recordMusicHistory);
+router.get("/history", protect, getMusicHistory);
+router.delete("/history", protect, clearMusicHistory);
+router.delete("/history/:id", protect, deleteMusicHistoryItem);
+router.post("/favorites", protect, toggleFavorite);
+router.get("/favorites", protect, getFavorites);
+router.post("/playlists", protect, createPlaylist);
+router.post("/playlists/:id/add", protect, addTrackToPlaylist);
 
 export default router;
