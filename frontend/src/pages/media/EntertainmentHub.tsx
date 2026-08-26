@@ -176,6 +176,30 @@ export function EntertainmentHub() {
     }
   }
 
+  function handlePlayVideo(vid: VideoItem) {
+    setActiveVideoEmbed(vid);
+    try {
+      const raw = localStorage.getItem("mindhaven_video_history");
+      const list = raw ? JSON.parse(raw) : [];
+      const historyItem = {
+        _id: `local_v_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        mediaType: "video",
+        mediaId: vid.id || vid.videoId || vid.title,
+        title: vid.title,
+        artist: vid.speaker || "Speaker",
+        data: vid,
+        playedAt: new Date().toISOString(),
+      };
+      const filtered = list.filter((item: any) => item.title !== vid.title);
+      const updated = [historyItem, ...filtered].slice(0, 60);
+      localStorage.setItem("mindhaven_video_history", JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("mindhaven_history_updated", { detail: { type: "video", item: historyItem } }));
+    } catch {
+      // Ignore
+    }
+    api.post("/video/history", { video: vid, track: vid }).catch(() => {});
+  }
+
   function handleLikeMeme(id: string) {
     setMemes((prev) =>
       prev.map((m) =>
@@ -504,7 +528,7 @@ export function EntertainmentHub() {
               : filteredVideos.slice(0, 8).map((vid) => (
                   <div
                     key={vid.id}
-                    onClick={() => setActiveVideoEmbed(vid)}
+                    onClick={() => handlePlayVideo(vid)}
                     className="group cursor-pointer flex flex-col rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3.5 shadow-sm hover:shadow-xl hover:border-red-500/40 transition-all duration-300"
                   >
                     {/* Video Thumbnail */}
