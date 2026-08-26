@@ -40,9 +40,9 @@ export function CandidateLayout() {
 
   const nav = [
     { to: "/candidate/dashboard", label: t("nav_home"), icon: <Home className="w-4 h-4" /> },
-    { to: "/candidate/assessment", label: language === "ta" ? "மனநிலை மதிப்பீடு" : "Psychology Assessment", icon: <Brain className="w-4 h-4 text-emerald-500" /> },
-    { to: "/candidate/entertainment", label: language === "ta" ? "பன்மொழி பொழுதுபோக்கு" : "Entertainment Hub", icon: <Sparkles className="w-4 h-4 text-purple-500" /> },
-    { to: "/candidate/search", label: language === "ta" ? "பொதுத் தேடல்" : "Global Search", icon: <Search className="w-4 h-4 text-blue-500" /> },
+    { to: "/candidate/assessment", label: t("nav_assessment"), icon: <Brain className="w-4 h-4 text-emerald-500" /> },
+    { to: "/candidate/entertainment", label: t("nav_entertainment"), icon: <Sparkles className="w-4 h-4 text-purple-500" /> },
+    { to: "/candidate/search", label: t("nav_search"), icon: <Search className="w-4 h-4 text-blue-500" /> },
     { to: "/candidate/ai-chat", label: t("nav_chat"), icon: <Sparkles className="w-4 h-4 text-blue-500" /> },
     { to: "/candidate/music", label: t("nav_music"), icon: <Music className="w-4 h-4 text-indigo-500" /> },
     { to: "/candidate/videos", label: t("nav_videos"), icon: <Film className="w-4 h-4 text-rose-500" /> },
@@ -52,7 +52,7 @@ export function CandidateLayout() {
     { to: "/candidate/memory", label: t("nav_memory"), icon: <Brain className="w-4 h-4 text-purple-500" /> },
     { to: "/candidate/counselors", label: t("nav_counselors"), icon: <UserCheck className="w-4 h-4 text-teal-500" /> },
     { to: "/candidate/appointments", label: t("nav_appointments"), icon: <Calendar className="w-4 h-4 text-sky-500" /> },
-    { to: "/candidate/parents", label: language === "ta" ? "பெற்றோர் இணைப்பு" : "Parent Link & Privacy", icon: <Users className="w-4 h-4 text-amber-500" /> },
+    { to: "/candidate/parents", label: t("nav_parents"), icon: <Users className="w-4 h-4 text-amber-500" /> },
     { to: "/candidate/emergency", label: t("nav_sos"), icon: <AlertCircle className="w-4 h-4 text-rose-500" /> },
     { to: "/candidate/settings", label: t("nav_settings"), icon: <Settings className="w-4 h-4 text-slate-500" /> },
   ];

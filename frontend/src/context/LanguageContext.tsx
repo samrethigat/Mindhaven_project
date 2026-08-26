@@ -55,18 +55,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return "en";
   });
 
-  // Load language on boot or user change: priority = user.preferredLanguage > localStorage > "en"
+  // Priority: localStorage > user.preferredLanguage > "en"
   useEffect(() => {
-    if (user?.preferredLanguage) {
+    const saved = localStorage.getItem("preferredLanguage");
+    if (saved) {
+      setLanguageState(saved);
+      document.documentElement.lang = saved;
+    } else if (user?.preferredLanguage) {
       setLanguageState(user.preferredLanguage);
       localStorage.setItem("preferredLanguage", user.preferredLanguage);
+      document.documentElement.lang = user.preferredLanguage;
     } else {
-      const stored = localStorage.getItem("preferredLanguage");
-      if (stored) {
-        setLanguageState(stored);
-      } else {
-        setLanguageState("en");
-      }
+      setLanguageState("en");
+      document.documentElement.lang = "en";
     }
   }, [user?.preferredLanguage]);
 
@@ -75,6 +76,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       const cleanCode = langCode.trim().toLowerCase();
       setLanguageState(cleanCode);
       localStorage.setItem("preferredLanguage", cleanCode);
+      document.documentElement.lang = cleanCode;
+
+      // Update user state and localStorage user object immediately
+      if (user) {
+        const updatedUser = { ...user, preferredLanguage: cleanCode };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+
+      // Dispatch real-time language event for immediate component updates
+      window.dispatchEvent(new CustomEvent("mindhaven_language_changed", { detail: { language: cleanCode } }));
 
       // Persist to user DB if authenticated
       if (user?._id) {

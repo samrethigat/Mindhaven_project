@@ -153,7 +153,26 @@ export function VideoPage() {
 
   async function handleOpenVideo(vid: Video) {
     setActiveVideo(vid);
-    api.post("/video/history", { video: vid }).catch(() => {});
+    try {
+      const raw = localStorage.getItem("mindhaven_video_history");
+      const list = raw ? JSON.parse(raw) : [];
+      const historyItem = {
+        _id: `local_v_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        mediaType: "video",
+        mediaId: vid.id || vid.videoId || vid.title,
+        title: vid.title,
+        artist: vid.speaker || "Speaker",
+        data: vid,
+        playedAt: new Date().toISOString(),
+      };
+      const filtered = list.filter((item: any) => item.title !== vid.title);
+      const updated = [historyItem, ...filtered].slice(0, 60);
+      localStorage.setItem("mindhaven_video_history", JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("mindhaven_history_updated", { detail: { type: "video", item: historyItem } }));
+    } catch {
+      // Ignore storage errors
+    }
+    api.post("/video/history", { video: vid, track: vid }).catch(() => {});
   }
 
   async function handleToggleFavorite(vid: Video, e: React.MouseEvent) {

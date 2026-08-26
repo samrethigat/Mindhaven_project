@@ -101,6 +101,27 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
       setQueue((prev) => [...prev, song]);
     }
 
+    // Save immediately to local history storage
+    try {
+      const raw = localStorage.getItem("mindhaven_music_history");
+      const list = raw ? JSON.parse(raw) : [];
+      const historyItem = {
+        _id: `local_m_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        mediaType: "music",
+        mediaId: song.id || song.title,
+        title: song.title,
+        artist: song.artist || "Artist",
+        data: song,
+        playedAt: new Date().toISOString(),
+      };
+      const filtered = list.filter((item: any) => item.title !== song.title || item.artist !== song.artist);
+      const updated = [historyItem, ...filtered].slice(0, 60);
+      localStorage.setItem("mindhaven_music_history", JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("mindhaven_history_updated", { detail: { type: "music", item: historyItem } }));
+    } catch {
+      // Ignore storage errors
+    }
+
     if (audioRef.current) {
       audioRef.current.src = song.audioUrl;
       audioRef.current.volume = isMuted ? 0 : volume;
@@ -109,7 +130,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
         .then(() => {
           setIsPlaying(true);
           // Record play history in backend
-          api.post("/music/history", { track: song }).catch(() => {});
+          api.post("/music/history", { track: song, song }).catch(() => {});
         })
         .catch((err) => {
           console.warn("Autoplay was blocked or failed:", err.message);

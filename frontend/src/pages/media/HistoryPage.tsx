@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useMusic } from "../../context/MusicContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -16,7 +16,6 @@ import {
   X,
   RotateCcw,
   Sparkles,
-  Heart,
   Eye,
   AlertTriangle,
 } from "lucide-react";
@@ -36,7 +35,7 @@ interface HistoryItem {
 export function HistoryPage() {
   const { language, t } = useLanguage();
   const { isDark } = useTheme();
-  usePageTitle(language === "ta" ? "செயல்பாட்டு வரலாறு (Activity History)" : "Activity & Media History");
+  usePageTitle(t("history_title"));
 
   const { playSong } = useMusic();
   const [activeTab, setActiveTab] = useState<"music" | "video">("music");
@@ -48,51 +47,117 @@ export function HistoryPage() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [clearing, setClearing] = useState(false);
 
-  useEffect(() => {
-    loadHistory();
-  }, []);
-
-  async function loadHistory() {
+  const loadHistory = useCallback(async () => {
     setLoading(true);
     try {
+      // 1. Read local history cache
+      let localMusic: HistoryItem[] = [];
+      let localVideo: HistoryItem[] = [];
+      try {
+        const rawM = localStorage.getItem("mindhaven_music_history");
+        if (rawM) localMusic = JSON.parse(rawM);
+        const rawV = localStorage.getItem("mindhaven_video_history");
+        if (rawV) localVideo = JSON.parse(rawV);
+      } catch {}
+
+      // 2. Fetch backend history
       const [mRes, vRes] = await Promise.all([
         api.get("/music/history").catch(() => ({ data: { history: [] } })),
         api.get("/video/history").catch(() => ({ data: { history: [] } })),
       ]);
-      setMusicHistory(mRes.data?.history || []);
-      setVideoHistory(vRes.data?.history || []);
-    } catch {
-      toast.error(
-        language === "ta"
-          ? "வரலாற்று பதிவுகளை ஏற்றுவதில் பிழை"
-          : "Error loading activity history"
+
+      const backendMusic: HistoryItem[] = mRes.data?.history || [];
+      const backendVideo: HistoryItem[] = vRes.data?.history || [];
+
+      // 3. Merge & Deduplicate Music
+      const mergedMusicMap = new Map<string, HistoryItem>();
+      [...localMusic, ...backendMusic].forEach((item) => {
+        const key = item.title?.toLowerCase().trim() || item._id;
+        if (!mergedMusicMap.has(key)) {
+          mergedMusicMap.set(key, item);
+        }
+      });
+      const finalMusic = Array.from(mergedMusicMap.values()).sort(
+        (a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime()
       );
+
+      // 4. Merge & Deduplicate Videos
+      const mergedVideoMap = new Map<string, HistoryItem>();
+      [...localVideo, ...backendVideo].forEach((item) => {
+        const key = item.title?.toLowerCase().trim() || item._id;
+        if (!mergedVideoMap.has(key)) {
+          mergedVideoMap.set(key, item);
+        }
+      });
+      const finalVideo = Array.from(mergedVideoMap.values()).sort(
+        (a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime()
+      );
+
+      setMusicHistory(finalMusic);
+      setVideoHistory(finalVideo);
+      localStorage.setItem("mindhaven_music_history", JSON.stringify(finalMusic));
+      localStorage.setItem("mindhaven_video_history", JSON.stringify(finalVideo));
+    } catch {
+      // Graceful offline fallback to localStorage
+      try {
+        const rawM = localStorage.getItem("mindhaven_music_history");
+        if (rawM) setMusicHistory(JSON.parse(rawM));
+        const rawV = localStorage.getItem("mindhaven_video_history");
+        if (rawV) setVideoHistory(JSON.parse(rawV));
+      } catch {}
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    loadHistory();
+
+    const onHistoryUpdated = () => {
+      try {
+        const rawM = localStorage.getItem("mindhaven_music_history");
+        if (rawM) setMusicHistory(JSON.parse(rawM));
+        const rawV = localStorage.getItem("mindhaven_video_history");
+        if (rawV) setVideoHistory(JSON.parse(rawV));
+      } catch {}
+    };
+
+    window.addEventListener("mindhaven_history_updated", onHistoryUpdated);
+    window.addEventListener("storage", onHistoryUpdated);
+
+    return () => {
+      window.removeEventListener("mindhaven_history_updated", onHistoryUpdated);
+      window.removeEventListener("storage", onHistoryUpdated);
+    };
+  }, [loadHistory]);
 
   async function handleDeleteItem(item: HistoryItem, e: React.MouseEvent) {
     e.stopPropagation();
     try {
       const endpoint = item.mediaType === "music" ? `/music/history/${item._id}` : `/video/history/${item._id}`;
-      await api.delete(endpoint);
+      await api.delete(endpoint).catch(() => {});
+      
       if (item.mediaType === "music") {
-        setMusicHistory((prev) => prev.filter((h) => h._id !== item._id));
+        const next = musicHistory.filter((h) => h._id !== item._id);
+        setMusicHistory(next);
+        localStorage.setItem("mindhaven_music_history", JSON.stringify(next));
       } else {
-        setVideoHistory((prev) => prev.filter((h) => h._id !== item._id));
+        const next = videoHistory.filter((h) => h._id !== item._id);
+        setVideoHistory(next);
+        localStorage.setItem("mindhaven_video_history", JSON.stringify(next));
       }
-      toast.success(
-        language === "ta" ? "பதிவு நீக்கப்பட்டது" : "Item removed from history"
-      );
+      toast.success(t("history_item_deleted"));
     } catch {
-      // Optimistic removal fallback
       if (item.mediaType === "music") {
-        setMusicHistory((prev) => prev.filter((h) => h._id !== item._id));
+        const next = musicHistory.filter((h) => h._id !== item._id);
+        setMusicHistory(next);
+        localStorage.setItem("mindhaven_music_history", JSON.stringify(next));
       } else {
-        setVideoHistory((prev) => prev.filter((h) => h._id !== item._id));
+        const next = videoHistory.filter((h) => h._id !== item._id);
+        setVideoHistory(next);
+        localStorage.setItem("mindhaven_video_history", JSON.stringify(next));
       }
-      toast.success(language === "ta" ? "பதிவு நீக்கப்பட்டது" : "Item removed");
+      toast.success(t("history_item_deleted"));
     }
   }
 
@@ -100,27 +165,27 @@ export function HistoryPage() {
     setClearing(true);
     try {
       const endpoint = activeTab === "music" ? "/music/history" : "/video/history";
-      await api.delete(endpoint);
+      await api.delete(endpoint).catch(() => {});
+
       if (activeTab === "music") {
         setMusicHistory([]);
+        localStorage.removeItem("mindhaven_music_history");
       } else {
         setVideoHistory([]);
+        localStorage.removeItem("mindhaven_video_history");
       }
       setShowClearConfirm(false);
-      toast.success(
-        activeTab === "music"
-          ? language === "ta"
-            ? "இசை வரலாறு முழுவதும் அழிக்கப்பட்டது"
-            : "Music history cleared"
-          : language === "ta"
-          ? "வீடியோ வரலாறு முழுவதும் அழிக்கப்பட்டது"
-          : "Video history cleared"
-      );
+      toast.success(activeTab === "music" ? t("history_cleared_music") : t("history_cleared_video"));
     } catch {
-      if (activeTab === "music") setMusicHistory([]);
-      else setVideoHistory([]);
+      if (activeTab === "music") {
+        setMusicHistory([]);
+        localStorage.removeItem("mindhaven_music_history");
+      } else {
+        setVideoHistory([]);
+        localStorage.removeItem("mindhaven_video_history");
+      }
       setShowClearConfirm(false);
-      toast.success(language === "ta" ? "வரலாறு அழிக்கப்பட்டது" : "History cleared");
+      toast.success(activeTab === "music" ? t("history_cleared_music") : t("history_cleared_video"));
     } finally {
       setClearing(false);
     }
@@ -134,7 +199,7 @@ export function HistoryPage() {
 
     if (diffSecs < 60) return language === "ta" ? "சற்று முன்" : "Just now";
     if (diffSecs < 3600) {
-      const mins = Math.floor(diffSecs / 60);
+      const mins = Math.max(1, Math.floor(diffSecs / 60));
       return language === "ta" ? `${mins} நிமிடங்களுக்கு முன்` : `${mins}m ago`;
     }
     if (diffSecs < 86400) {
@@ -175,24 +240,22 @@ export function HistoryPage() {
   const activeCount = activeTab === "music" ? musicHistory.length : videoHistory.length;
 
   return (
-    <div className="space-y-6 pb-28 max-w-5xl mx-auto">
+    <div className="space-y-6 pb-28 max-w-5xl mx-auto animate-fade-in">
       {/* Top Header Card */}
       <div className="card p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden transition-colors">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
               <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              <span>{language === "ta" ? "செயல்பாட்டு பதிவு" : "Activity Tracking"}</span>
+              <span>{t("history_badge")}</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {language === "ta" ? "🕘 செயல்பாட்டு வரலாறு (Recent History)" : "Activity & Media History"}
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+              <span>🕘 {t("history_title")}</span>
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-              {language === "ta"
-                ? "நீங்கள் சமீபத்தில் கேட்ட பாடல்கள், பார்த்த வீடியோக்கள் மற்றும் செயல்பாடுகளின் காலவரிசைப் பட்டியல்."
-                : "A unified timeline of your recently played music, watched video masterclasses, and student activities."}
+              {t("history_sub")}
             </p>
           </div>
 
@@ -201,20 +264,20 @@ export function HistoryPage() {
             <button
               onClick={loadHistory}
               disabled={loading}
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-xs font-bold flex items-center gap-1.5"
-              title="Refresh history"
+              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-xs font-bold flex items-center gap-1.5 active:scale-95"
+              title={t("history_refresh")}
             >
               <RotateCcw className={`w-4 h-4 ${loading ? "animate-spin text-blue-600" : ""}`} />
-              <span className="hidden sm:inline">{language === "ta" ? "புதுப்பி" : "Refresh"}</span>
+              <span className="hidden sm:inline">{t("history_refresh")}</span>
             </button>
 
             {activeCount > 0 && (
               <button
                 onClick={() => setShowClearConfirm(true)}
-                className="px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/80 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all text-xs font-bold flex items-center gap-1.5"
+                className="px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/80 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all text-xs font-bold flex items-center gap-1.5 active:scale-95"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>{language === "ta" ? "வரலாற்றை அழி" : "Clear History"}</span>
+                <span>{t("history_clear")}</span>
               </button>
             )}
           </div>
@@ -238,7 +301,7 @@ export function HistoryPage() {
           >
             <Music className="w-4 h-4" />
             <span>
-              {language === "ta" ? "இசை வரலாறு" : "Music History"} ({musicHistory.length})
+              {t("history_music_tab")} ({musicHistory.length})
             </span>
           </button>
 
@@ -255,7 +318,7 @@ export function HistoryPage() {
           >
             <Film className="w-4 h-4" />
             <span>
-              {language === "ta" ? "வீடியோ வரலாறு" : "Video History"} ({videoHistory.length})
+              {t("history_video_tab")} ({videoHistory.length})
             </span>
           </button>
         </div>
@@ -269,12 +332,8 @@ export function HistoryPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={
               activeTab === "music"
-                ? language === "ta"
-                  ? "பாடல்களைத் தேடுங்கள்..."
-                  : "Search music history..."
-                : language === "ta"
-                ? "வீடியோக்களைத் தேடுங்கள்..."
-                : "Search video history..."
+                ? t("history_search_music_placeholder")
+                : t("history_search_video_placeholder")
             }
             className="input pl-9 pr-8 py-1.5 text-xs w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
           />
@@ -310,25 +369,17 @@ export function HistoryPage() {
                 <Music className="w-7 h-7" />
               </div>
               <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                {searchQuery
-                  ? language === "ta"
-                    ? "பொருத்தமான பாடல்கள் எதுவும் இல்லை"
-                    : "No matching tracks found in history"
-                  : language === "ta"
-                  ? "பாடல்கள் எதுவும் இன்னும் இயக்கப்படவில்லை"
-                  : "No music playback history yet"}
+                {t("history_empty_music")}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                {language === "ta"
-                  ? "நீங்கள் கேட்கும் பாடல்கள் தானாகவே இங்கே பதிவு செய்யப்படும்."
-                  : "Songs you play from the Mindhaven Music Hub or Spotify catalog will appear here."}
+                {t("history_empty_music_sub")}
               </p>
               <Link
                 to="/candidate/music"
                 className="btn-primary text-xs inline-flex items-center gap-1.5 shadow-md shadow-blue-500/20"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>{language === "ta" ? "இசை அரங்கை திறக்க" : "Explore Music Hub"}</span>
+                <span>{t("history_open_music_hub")}</span>
               </Link>
             </div>
           ) : (
@@ -389,7 +440,7 @@ export function HistoryPage() {
                       <button
                         onClick={() => playSong(trackData)}
                         className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-colors shadow-sm"
-                        title="Play Track"
+                        title={t("music_play_now")}
                       >
                         <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                       </button>
@@ -398,7 +449,7 @@ export function HistoryPage() {
                       <button
                         onClick={(e) => handleDeleteItem(h, e)}
                         className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                        title="Remove from history"
+                        title={t("history_item_deleted")}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -420,25 +471,17 @@ export function HistoryPage() {
                 <Film className="w-7 h-7" />
               </div>
               <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                {searchQuery
-                  ? language === "ta"
-                    ? "பொருத்தமான வீடியோக்கள் எதுவும் இல்லை"
-                    : "No matching videos found in history"
-                  : language === "ta"
-                  ? "வீடியோக்கள் எதுவும் இன்னும் பார்க்கப்படவில்லை"
-                  : "No watch history recorded yet"}
+                {t("history_empty_video")}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                {language === "ta"
-                  ? "நீங்கள் பார்க்கும் வீடியோக்கள் தானாகவே இங்கே சேர்க்கப்படும்."
-                  : "Videos you stream from the YouTube Wellness Hub will appear here."}
+                {t("history_empty_video_sub")}
               </p>
               <Link
                 to="/candidate/videos"
                 className="btn-primary text-xs inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 shadow-md shadow-rose-500/20"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>{language === "ta" ? "வீடியோ அரங்கை திறக்க" : "Explore YouTube Hub"}</span>
+                <span>{t("history_open_video_hub")}</span>
               </Link>
             </div>
           ) : (
@@ -502,7 +545,7 @@ export function HistoryPage() {
                       <button
                         onClick={(e) => handleDeleteItem(h, e)}
                         className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                        title="Remove from history"
+                        title={t("history_item_deleted")}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -571,19 +614,11 @@ export function HistoryPage() {
             </div>
 
             <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
-              {activeTab === "music"
-                ? language === "ta"
-                  ? "இசை வரலாற்றை அழிக்கவா?"
-                  : "Clear Music History?"
-                : language === "ta"
-                ? "வீடியோ வரலாற்றை அழிக்கவா?"
-                : "Clear Video History?"}
+              {activeTab === "music" ? t("history_confirm_music_title") : t("history_confirm_video_title")}
             </h3>
 
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              {language === "ta"
-                ? "இது உங்கள் அனைத்து சமீபத்திய செயல்பாட்டு பதிவுகளையும் நிரந்தரமாக நீக்கும்."
-                : "This will permanently remove all your recent activity entries in this category."}
+              {t("history_confirm_desc")}
             </p>
 
             <div className="flex gap-2 pt-2">
@@ -591,20 +626,14 @@ export function HistoryPage() {
                 onClick={() => setShowClearConfirm(false)}
                 className="btn-outline text-xs flex-1 py-2.5"
               >
-                {language === "ta" ? "ரத்து செய்" : "Cancel"}
+                {t("common_cancel")}
               </button>
               <button
                 onClick={handleClearAll}
                 disabled={clearing}
                 className="btn-danger text-xs flex-1 py-2.5 shadow-md shadow-rose-500/20"
               >
-                {clearing
-                  ? language === "ta"
-                    ? "அழிக்கப்படுகிறது..."
-                    : "Clearing..."
-                  : language === "ta"
-                  ? "ஆம், அழி"
-                  : "Yes, Clear"}
+                {clearing ? t("common_clearing") : t("common_confirm_clear")}
               </button>
             </div>
           </div>

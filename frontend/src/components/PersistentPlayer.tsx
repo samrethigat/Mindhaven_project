@@ -201,7 +201,7 @@ export function PersistentPlayer() {
               title="Playback Queue"
             >
               <ListMusic className="w-4 h-4" />
-              <span className="hidden sm:inline">வரிசை ({queue.length})</span>
+              <span className="hidden sm:inline">Queue ({queue.length})</span>
             </button>
           </div>
         </div>
@@ -213,7 +213,7 @@ export function PersistentPlayer() {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <ListMusic className="w-4 h-4 text-blue-600" />
-              <h4 className="font-bold text-sm text-slate-900">பாடல் வரிசை (Queue)</h4>
+              <h4 className="font-bold text-sm text-slate-900">Music Queue</h4>
               <span className="badge bg-blue-100 text-blue-800 text-[10px]">{queue.length}</span>
             </div>
             <button
