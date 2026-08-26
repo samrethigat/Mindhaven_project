@@ -102,7 +102,7 @@ export async function regenerateResponse(req, res) {
       return res.status(400).json({ error: "Conversation ID is required" });
     }
 
-    const userId = req.user._id;
+    const userId = await getSafeUserId(req);
     const conversation = await Conversation.findOne({ _id: conversationId, user: userId });
     if (!conversation) {
       return res.status(404).json({ error: "Conversation not found" });
@@ -301,9 +301,10 @@ export async function deleteConversation(req, res) {
  */
 export async function clearConversationMessages(req, res) {
   try {
+    const userId = await getSafeUserId(req);
     const conversation = await Conversation.findOne({
       _id: req.params.id,
-      user: req.user._id,
+      user: userId,
     });
     if (!conversation) {
       return res.status(404).json({ error: "Conversation not found" });
@@ -320,7 +321,8 @@ export async function clearConversationMessages(req, res) {
  */
 export async function getMemories(req, res) {
   try {
-    const memories = await Memory.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const userId = await getSafeUserId(req);
+    const memories = await Memory.find({ user: userId }).sort({ createdAt: -1 });
     res.json({ memories });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -329,12 +331,13 @@ export async function getMemories(req, res) {
 
 export async function addMemory(req, res) {
   try {
+    const userId = await getSafeUserId(req);
     const { key, value, category } = req.body;
     if (!key || !value) {
       return res.status(400).json({ error: "Key and value are required" });
     }
     const memory = await Memory.create({
-      user: req.user._id,
+      user: userId,
       key,
       value,
       category: category || "general",
@@ -348,7 +351,8 @@ export async function addMemory(req, res) {
 
 export async function deleteMemory(req, res) {
   try {
-    await Memory.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+    const userId = await getSafeUserId(req);
+    await Memory.findOneAndDelete({ _id: req.params.id, user: userId });
     res.json({ message: "Memory removed" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -357,7 +361,8 @@ export async function deleteMemory(req, res) {
 
 export async function clearAllMemories(req, res) {
   try {
-    await Memory.deleteMany({ user: req.user._id });
+    const userId = await getSafeUserId(req);
+    await Memory.deleteMany({ user: userId });
     res.json({ message: "All memories cleared" });
   } catch (error) {
     res.status(500).json({ error: error.message });

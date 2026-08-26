@@ -487,15 +487,15 @@ export async function getRecommendations(req, res) {
  */
 export async function recordMusicHistory(req, res) {
   try {
-    const { song } = req.body;
+    const song = req.body.song || req.body.track;
     if (!song || !song.id) return res.status(400).json({ error: "Song is required" });
 
     await MediaHistory.create({
       user: req.user._id,
       mediaType: "music",
       mediaId: song.id,
-      title: song.title,
-      artist: song.artist,
+      title: song.title || "Untitled Track",
+      artist: song.artist || "Unknown Artist",
       data: song,
       playedAt: new Date(),
     });
@@ -519,6 +519,37 @@ export async function getMusicHistory(req, res) {
       .limit(50);
 
     res.json({ history });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+/**
+ * DELETE /api/music/history
+ */
+export async function clearMusicHistory(req, res) {
+  try {
+    await MediaHistory.deleteMany({
+      user: req.user._id,
+      mediaType: "music",
+    });
+    res.json({ message: "Music history cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+/**
+ * DELETE /api/music/history/:id
+ */
+export async function deleteMusicHistoryItem(req, res) {
+  try {
+    await MediaHistory.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+      mediaType: "music",
+    });
+    res.json({ message: "History item removed successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

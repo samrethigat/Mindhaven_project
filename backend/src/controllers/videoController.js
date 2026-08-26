@@ -451,3 +451,34 @@ export async function getVideoHistory(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
+/**
+ * DELETE /api/video/history
+ */
+export async function clearVideoHistory(req, res) {
+  try {
+    await MediaHistory.deleteMany({
+      user: req.user._id,
+      mediaType: "video",
+    });
+    res.json({ message: "Video history cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+/**
+ * DELETE /api/video/history/:id
+ */
+export async function deleteVideoHistoryItem(req, res) {
+  try {
+    await MediaHistory.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+      mediaType: "video",
+    });
+    res.json({ message: "Video history item removed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

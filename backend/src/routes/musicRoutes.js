@@ -7,6 +7,8 @@ import {
   getRecommendations,
   recordMusicHistory,
   getMusicHistory,
+  clearMusicHistory,
+  deleteMusicHistoryItem,
   toggleFavorite,
   getFavorites,
   getPlaylists,
@@ -24,6 +26,8 @@ router.get("/artists/:id", getArtistDetails);
 router.get("/recommendations", getRecommendations);
 router.post("/history", recordMusicHistory);
 router.get("/history", getMusicHistory);
+router.delete("/history", clearMusicHistory);
+router.delete("/history/:id", deleteMusicHistoryItem);
 router.post("/favorites", toggleFavorite);
 router.get("/favorites", getFavorites);
 router.get("/playlists", getPlaylists);

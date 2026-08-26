@@ -62,12 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       return data.user;
     } catch (err: any) {
-      // If backend explicitly returned a 400 validation error (and backend is connected)
-      if (err?.response?.data?.error && err?.response?.status === 400) {
+      // If backend responded with any HTTP error status (400, 401, 403, 404, 422, 500), propagate it
+      if (err?.response?.data) {
         throw err;
       }
 
-      // Seamless fallback: Log in the student/counselor/parent immediately with their entered name/email
+      // Seamless offline fallback only when backend server is completely unreachable
       const nameFromEmail = email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
       const demoUser: User = {
         _id: `user_${Date.now()}`,
@@ -107,7 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       return data.user;
     } catch (err: any) {
-      if (err?.response?.data?.error && err?.response?.status === 400) {
+      // If backend responded with validation error or duplicate email error, propagate it
+      if (err?.response?.data) {
         throw err;
       }
 
